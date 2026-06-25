@@ -1,0 +1,16 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment — never commit secrets
+.env
+
+# Uploaded files — belong on the server, not in source control
+uploads/
+
+# OS
+.DS_Store
+Thumbs.db
