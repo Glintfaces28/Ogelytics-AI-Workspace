@@ -1,176 +1,262 @@
-# Enterprise AI Workspace API
+# Ogelytics AI Workspace
 
-A cloud-ready backend API for businesses to upload documents, search company knowledge with AI, manage teams, and generate workspace analytics.
+**AI-powered document intelligence for teams**
 
-Built with **Python**, **FastAPI**, **PostgreSQL**, **Docker**, and deployed on **AWS EC2 + RDS**.
+Ogelytics AI Workspace is a full-stack collaboration platform that helps teams upload business documents, search their knowledge base, and chat with document content using AI. It combines secure authentication, team-based access patterns, document intelligence, and usage analytics in one workspace.
+
+Built by **Oghale Gladys Eni**.
+
+---
+
+## What It Does
+
+Ogelytics AI Workspace turns uploaded documents into searchable team knowledge.
+
+Users can create an account, upload PDF documents, ask questions about those documents, manage team collaboration, reset passwords by email, and view analytics based on real workspace activity. The backend exposes a FastAPI REST API, while the frontend provides a clean React workspace experience for documents, chat, teams, and analytics.
+
+---
+
+## Key Features
+
+- **Upload and chat with documents using AI**<br>
+  Upload documents, extract readable content, search document passages, and generate AI-assisted answers grounded in uploaded files.
+
+- **Multilingual support**<br>
+  The AI chat can respond in the user's language when OpenAI is configured, making the workspace usable across multilingual teams.
+
+- **Team collaboration**<br>
+  Organize users into teams with owner, admin, and member roles for realistic workspace permissions.
+
+- **Analytics dashboard**<br>
+  View real usage data such as uploaded documents, team counts, user activity, storage usage, and workspace-level trends.
+
+- **Secure authentication**<br>
+  Register and sign in with JWT authentication, bcrypt password hashing, and email-based password reset powered by SendGrid.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Language | Python 3.13 |
-| Framework | FastAPI |
-| Database | PostgreSQL (SQLAlchemy ORM) |
-| Authentication | JWT (JSON Web Tokens) + bcrypt |
-| PDF Processing | pypdf |
-| Containerisation | Docker + Docker Compose |
-| Cloud | AWS EC2 + RDS |
-
----
-
-## Features
-
-- **User Authentication** — register, login, JWT-protected endpoints
-- **Document Management** — upload, list, download, extract PDF text, delete
-- **AI Document Search** — keyword-ranked passage search across uploaded PDFs
-- **AI Document Chat** — ask questions, receive answers grounded in document content
-- **Team Management** — create teams, add/remove members with admin or member roles
-- **Workspace Analytics** — total documents, users, teams, storage, and per-user upload counts
-- **Docker** — fully containerised, runs locally with `docker compose up`
-- **AWS Deployment** — EC2 setup scripts and production compose file for RDS-backed deployment
+| Area | Technology |
+| --- | --- |
+| Backend API | FastAPI |
+| Frontend | React, TypeScript-ready Vite architecture |
+| Database | PostgreSQL |
+| Cache / async-ready infrastructure | Redis |
+| AI | OpenAI |
+| Email delivery | SendGrid |
+| Authentication | JWT, bcrypt |
+| Document processing | pypdf |
+| Containers | Docker, Docker Compose |
 
 ---
 
 ## Project Structure
 
-```
-enterprise-ai-workspace/
-└── backend/
-    ├── main.py                   # FastAPI app entry point
-    ├── database.py               # SQLAlchemy engine and session
-    ├── models.py                 # Database models (User, Document, Team, TeamMember)
-    ├── schemas.py                # Pydantic request/response schemas
-    ├── dependencies.py           # Reusable FastAPI dependencies (get_current_user)
-    ├── routers/
-    │   ├── auth.py               # POST /auth/register, POST /auth/login
-    │   ├── documents.py          # Document upload, download, content, delete
-    │   ├── ai.py                 # GET /ai/search, POST /ai/chat
-    │   ├── teams.py              # Team CRUD and membership management
-    │   └── reports.py            # GET /reports/summary, GET /reports/documents/by-user
-    ├── services/
-    │   ├── auth.py               # Password hashing, JWT creation/decoding
-    │   ├── pdf_reader.py         # PDF text extraction
-    │   └── document_search.py    # Passage ranking and answer generation
-    ├── Dockerfile
-    ├── docker-compose.yml        # Local development (backend + PostgreSQL)
-    ├── docker-compose.prod.yml   # Production (backend only, connects to RDS)
-    ├── .env.example              # Environment variable template
-    ├── requirements.txt
-    └── aws/
-        ├── ec2-setup.sh          # Bootstrap a fresh EC2 instance
-        └── deploy.sh             # Pull latest code and restart container
+```text
+.
+├── README.md
+├── LEARNING_LOG.md
+├── PROJECT_NOTES.md
+├── Procfile
+├── railway.toml
+└── enterprise-ai-workspace/
+    ├── backend/
+    │   ├── main.py
+    │   ├── database.py
+    │   ├── models.py
+    │   ├── schemas.py
+    │   ├── dependencies.py
+    │   ├── routers/
+    │   │   ├── auth.py
+    │   │   ├── documents.py
+    │   │   ├── ai.py
+    │   │   ├── teams.py
+    │   │   ├── reports.py
+    │   │   └── analytics.py
+    │   ├── services/
+    │   │   ├── auth.py
+    │   │   ├── email.py
+    │   │   ├── openai_answer.py
+    │   │   ├── pdf_reader.py
+    │   │   └── document_search.py
+    │   ├── requirements.txt
+    │   ├── Dockerfile
+    │   └── docker-compose.yml
+    └── frontend/
+        ├── src/
+        ├── package.json
+        └── vite.config.js
 ```
 
 ---
 
-## Running Locally
+## Run Locally
 
 ### Prerequisites
 
-- Python 3.13
-- PostgreSQL running locally
+Install the following before starting:
 
-### Setup
+- Python 3.13+
+- Node.js 20+
+- PostgreSQL
+- Redis
+- Docker Desktop, optional but recommended
+- SendGrid API key, optional for password reset email delivery
+- OpenAI API key, optional for AI-generated answers
+
+### 1. Clone the Repository
 
 ```bash
-cd enterprise-ai-workspace/backend
-
-python -m venv venv
-venv\Scripts\activate          # Windows
-# source venv/bin/activate     # macOS/Linux
-
-pip install -r requirements.txt
-
-cp .env.example .env
-# Edit .env with your local PostgreSQL credentials
-
-uvicorn main:app --reload
+git clone <your-repository-url>
+cd Enterprise-AI-Workspace
 ```
 
-API docs: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-
----
-
-## Running with Docker
+### 2. Configure the Backend
 
 ```bash
 cd enterprise-ai-workspace/backend
+python -m venv venv
+```
 
+Activate the virtual environment:
+
+```bash
+# Windows PowerShell
+.\venv\Scripts\Activate.ps1
+
+# macOS / Linux
+source venv/bin/activate
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Create your environment file:
+
+```bash
 cp .env.example .env
-# Edit .env with your credentials
+```
 
+Update `.env` with your local values:
+
+```env
+DB_USER=postgres
+DB_PASSWORD=your_password_here
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=enterprise_ai_workspace
+SECRET_KEY=replace_with_a_secure_secret
+SENDGRID_API_KEY=your_sendgrid_api_key_here
+SENDGRID_FROM_EMAIL=verified_sender@example.com
+FRONTEND_URL=http://localhost:5173
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4o-mini
+```
+
+Start the backend:
+
+```bash
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+Backend health check:
+
+```text
+http://127.0.0.1:8000/health
+```
+
+Interactive API docs:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### 3. Configure the Frontend
+
+Open a second terminal:
+
+```bash
+cd enterprise-ai-workspace/frontend
+npm install
+```
+
+Create or update `frontend/.env`:
+
+```env
+VITE_API_URL=http://localhost:8000
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Open the app:
+
+```text
+http://localhost:5173
+```
+
+### 4. Run with Docker
+
+From the backend directory:
+
+```bash
+cd enterprise-ai-workspace/backend
 docker compose up --build
 ```
 
-This starts both the FastAPI backend and a PostgreSQL container.
+Docker Compose starts the backend and supporting services defined for local development.
 
 ---
 
-## Deploying to AWS
+## Core API Areas
 
-### Architecture
-
-```
-Internet → EC2 (FastAPI on port 8000) → RDS (PostgreSQL)
-```
-
-### Steps
-
-1. Create an **RDS PostgreSQL** instance in AWS Console
-2. Launch an **EC2** instance (Amazon Linux 2023, t2.micro)
-3. Configure Security Groups:
-   - EC2: allow port 22 (your IP only) and port 8000 (internet)
-   - RDS: allow port 5432 from EC2 security group only
-4. SSH into EC2 and run `aws/ec2-setup.sh` once
-5. Clone this repository, fill in `.env` with the RDS endpoint
-6. Run `aws/deploy.sh`
-
-Full step-by-step instructions are in [LEARNING_LOG.md](LEARNING_LOG.md).
-
----
-
-## API Endpoints
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| GET | `/` | No | Health check |
-| GET | `/health` | No | Health check |
-| POST | `/auth/register` | No | Create user account |
-| POST | `/auth/login` | No | Login and receive JWT |
-| POST | `/upload` | Yes | Upload a document |
-| GET | `/documents` | No | List all documents |
-| GET | `/documents/{id}` | No | Get document details |
-| GET | `/documents/{id}/download` | No | Download document file |
-| GET | `/documents/{id}/content` | No | Extract PDF text |
-| DELETE | `/documents/{id}` | Yes | Delete document |
-| GET | `/ai/search` | Yes | Search documents by keyword |
-| POST | `/ai/chat` | Yes | Ask a question about documents |
-| POST | `/teams` | Yes | Create a team |
-| GET | `/teams` | Yes | List your teams |
-| GET | `/teams/{id}` | Yes | Get team details |
-| POST | `/teams/{id}/members` | Yes (admin) | Add a team member |
-| DELETE | `/teams/{id}/members/{uid}` | Yes (admin) | Remove a team member |
-| DELETE | `/teams/{id}` | Yes (owner) | Delete a team |
-| GET | `/reports/summary` | Yes | Workspace statistics |
-| GET | `/reports/documents/by-user` | Yes | Per-user upload counts |
+| Area | Example Endpoints |
+| --- | --- |
+| Authentication | `POST /auth/register`, `POST /auth/login`, `POST /auth/forgot-password`, `POST /auth/reset-password` |
+| Documents | `POST /upload`, `GET /documents`, `GET /documents/{id}/content`, `DELETE /documents/{id}` |
+| AI | `GET /ai/search`, `POST /ai/chat` |
+| Teams | `POST /teams`, `GET /teams`, `POST /teams/{id}/members`, `DELETE /teams/{id}` |
+| Analytics | `GET /reports/summary`, `GET /reports/documents/by-user` |
 
 ---
 
 ## Environment Variables
 
-| Variable | Description |
-|----------|-------------|
+| Variable | Purpose |
+| --- | --- |
 | `DB_USER` | PostgreSQL username |
 | `DB_PASSWORD` | PostgreSQL password |
-| `DB_HOST` | Database host (`localhost` or RDS endpoint) |
-| `DB_PORT` | Database port (default: 5432) |
-| `DB_NAME` | Database name |
-| `SECRET_KEY` | Secret key for signing JWT tokens |
+| `DB_HOST` | PostgreSQL host |
+| `DB_PORT` | PostgreSQL port |
+| `DB_NAME` | PostgreSQL database name |
+| `SECRET_KEY` | JWT signing secret |
+| `SENDGRID_API_KEY` | SendGrid key for password reset emails |
+| `SENDGRID_FROM_EMAIL` | Verified sender address for outgoing email |
+| `FRONTEND_URL` | Frontend base URL used in reset links |
+| `OPENAI_API_KEY` | OpenAI key for AI-generated document answers |
+| `OPENAI_MODEL` | OpenAI model name used by the AI service |
+| `VITE_API_URL` | Frontend API base URL |
+
+---
+
+## Development Notes
+
+- Uploaded files are stored locally during development.
+- PostgreSQL stores users, documents, teams, password reset tokens, and analytics data.
+- AI chat works with local document search and upgrades to OpenAI-generated answers when `OPENAI_API_KEY` is configured.
+- SendGrid password reset email falls back to a development reset link when email delivery is not configured.
+- Redis is included in the target stack for cache/session/task infrastructure as the project grows.
 
 ---
 
 ## Author
 
-Oghale Gladys Eni
+**Oghale Gladys Eni**<br>
+Builder of Ogelytics AI Workspace
