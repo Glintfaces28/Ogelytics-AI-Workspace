@@ -73,9 +73,11 @@ def upload_document(
     text_content = _extract_text(file_bytes, content_type, safe_filename)
 
     if supabase_configured():
-        # ✅ Permanent cloud storage — survives all redeployments
-        storage_url = supabase_upload(file_bytes, safe_filename, content_type)
+        # Prefix with user ID so two users can upload same filename without collision
+        storage_key = f"user_{current_user.id}/{safe_filename}"
+        storage_url = supabase_upload(file_bytes, storage_key, content_type)
         file_path = storage_url
+        logger.info("Uploaded %s to Supabase Storage", storage_key)
         logger.info("Uploaded %s to Supabase Storage", safe_filename)
     else:
         # Fallback: local filesystem
@@ -181,7 +183,9 @@ def delete_document(
         raise HTTPException(status_code=404, detail="Document not found")
 
     if document.storage_url:
-        supabase_delete(document.filename)
+        # Extract the storage key from the URL (everything after /object/public/documents/)
+        storage_key = document.storage_url.split("/object/public/documents/")[-1]
+        supabase_delete(storage_key)
     else:
         file_path = Path(document.file_path)
         if file_path.exists():
