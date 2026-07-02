@@ -9,3 +9,5 @@ python-jose[cryptography]
 bcrypt
 sendgrid
 openai
+supabase
+httpx

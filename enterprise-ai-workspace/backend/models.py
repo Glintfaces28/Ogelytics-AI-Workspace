@@ -23,6 +23,8 @@ class Document(Base):
     content_type = Column(String, nullable=True)
     file_path = Column(String, nullable=False)
     file_size = Column(Integer, nullable=False)
+    storage_url = Column(String, nullable=True)  # Supabase Storage public URL
+    text_content = Column(String, nullable=True)   # Extracted text cached at upload time
     uploaded_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=True)
 

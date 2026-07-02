@@ -32,3 +32,20 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
+def run_migrations(engine):
+    """Add new columns to existing tables without Alembic."""
+    from sqlalchemy import text
+    migrations = [
+        "ALTER TABLE documents ADD COLUMN IF NOT EXISTS storage_url VARCHAR",
+        "ALTER TABLE documents ADD COLUMN IF NOT EXISTS text_content TEXT",
+    ]
+    with engine.connect() as conn:
+        for sql in migrations:
+            try:
+                conn.execute(text(sql))
+            except Exception as exc:
+                import logging
+                logging.getLogger(__name__).warning("Migration skipped: %s — %s", sql, exc)
+        conn.commit()

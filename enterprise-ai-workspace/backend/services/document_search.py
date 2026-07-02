@@ -3,7 +3,7 @@ import re
 from pathlib import Path
 
 import models
-from services.pdf_reader import read_pdf
+from services.pdf_reader import read_pdf, read_pdf_from_bytes
 
 logger = logging.getLogger(__name__)
 
@@ -84,8 +84,25 @@ def _is_pdf_document(document: models.Document) -> bool:
 
 
 def _document_passages(document: models.Document) -> list[str]:
+    # 1. Use cached text (extracted once at upload — zero memory spike, zero download)
+    if getattr(document, "text_content", None):
+        return _split_passages(document.text_content)
+
+    # 2. Try Supabase Storage (permanent cloud storage)
+    if getattr(document, "storage_url", None):
+        try:
+            from services.supabase_storage import download_file
+            pdf_bytes = download_file(document.storage_url)
+            text = read_pdf_from_bytes(pdf_bytes)
+            return _split_passages(text)
+        except Exception as exc:
+            logger.error("Supabase download failed for %s: %s", document.filename, exc)
+            return []
+
+    # 3. Fallback: local filesystem
     file_path = Path(document.file_path)
     if not file_path.exists():
+        logger.warning("File not found on disk: %s", document.file_path)
         return []
     text = read_pdf(str(file_path))
     return _split_passages(text)

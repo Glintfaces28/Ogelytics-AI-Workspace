@@ -12,6 +12,8 @@ from routers.reports import router as reports_router
 from routers.teams import router as teams_router
 
 Base.metadata.create_all(bind=engine)
+from database import run_migrations
+run_migrations(engine)
 
 app = FastAPI(
     title="Ogelytics AI Workspace API",
