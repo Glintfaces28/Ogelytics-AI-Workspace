@@ -170,10 +170,14 @@ def search_documents(
     limit: int = 5,
     document_id: int | None = None,
     document_ids: list[int] | None = None,
+    user_id: int | None = None,
 ) -> list[dict]:
     query_tokens = _query_tokens(query)
 
     documents_query = db.query(models.Document)
+    # Always scope to the requesting user
+    if user_id is not None:
+        documents_query = documents_query.filter(models.Document.uploaded_by == user_id)
     if document_ids:
         documents_query = documents_query.filter(models.Document.id.in_(document_ids))
     elif document_id is not None:

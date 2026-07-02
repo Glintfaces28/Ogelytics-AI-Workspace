@@ -32,7 +32,7 @@ def search_company_documents(
     db.add(models.AIQuery(user_id=current_user.id, query_text=query, query_type="search"))
     db.commit()
 
-    results = search_documents(db=db, query=query, limit=limit)
+    results = search_documents(db=db, query=query, limit=limit, user_id=current_user.id)
     return {"query": query, "results": results}
 
 
@@ -62,6 +62,7 @@ def chat_with_documents(
         limit=request.max_results,
         document_id=request.document_id,
         document_ids=request.document_ids,
+        user_id=current_user.id,
     )
     if is_openai_configured():
         try:

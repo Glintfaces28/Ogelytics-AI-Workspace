@@ -37,7 +37,9 @@ def get_documents(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    return db.query(models.Document).all()
+    return db.query(models.Document).filter(
+        models.Document.uploaded_by == current_user.id
+    ).all()
 
 
 @router.get("/documents/{document_id}")
@@ -46,7 +48,10 @@ def get_document(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    document = db.query(models.Document).filter(models.Document.id == document_id).first()
+    document = db.query(models.Document).filter(
+        models.Document.id == document_id,
+        models.Document.uploaded_by == current_user.id,
+    ).first()
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
     return document
@@ -108,7 +113,10 @@ def download_document(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    document = db.query(models.Document).filter(models.Document.id == document_id).first()
+    document = db.query(models.Document).filter(
+        models.Document.id == document_id,
+        models.Document.uploaded_by == current_user.id,
+    ).first()
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
 
@@ -134,7 +142,10 @@ def read_document_content(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    document = db.query(models.Document).filter(models.Document.id == document_id).first()
+    document = db.query(models.Document).filter(
+        models.Document.id == document_id,
+        models.Document.uploaded_by == current_user.id,
+    ).first()
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
     if document.content_type != "application/pdf":
@@ -162,7 +173,10 @@ def delete_document(
     db: Session = Depends(get_db),
     current_user: models.User = Depends(get_current_user),
 ):
-    document = db.query(models.Document).filter(models.Document.id == document_id).first()
+    document = db.query(models.Document).filter(
+        models.Document.id == document_id,
+        models.Document.uploaded_by == current_user.id,
+    ).first()
     if not document:
         raise HTTPException(status_code=404, detail="Document not found")
 
