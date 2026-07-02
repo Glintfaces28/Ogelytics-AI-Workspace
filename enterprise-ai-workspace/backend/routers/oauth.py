@@ -117,8 +117,8 @@ def google_callback(code: str, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(user)
 
-    # 4. Issue our own JWT
-    jwt_token = create_access_token({"sub": str(user.id), "email": user.email})
+    # 4. Issue our own JWT — sub must be email to match get_current_user in dependencies.py
+    jwt_token = create_access_token({"sub": user.email})
 
     # 5. Redirect to frontend with token
     return RedirectResponse(
