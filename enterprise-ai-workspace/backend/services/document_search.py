@@ -8,43 +8,19 @@ from services.pdf_reader import read_pdf
 logger = logging.getLogger(__name__)
 
 STOPWORDS = {
-    "a",
-    "about",
-    "all",
-    "am",
-    "an",
-    "and",
-    "anything",
-    "are",
-    "auf",
-    "bitte",
-    "can",
-    "der",
-    "die",
-    "das",
-    "document",
-    "documents",
-    "ein",
-    "eine",
-    "for",
-    "from",
-    "is",
-    "it",
-    "me",
-    "mir",
-    "of",
-    "please",
-    "sage",
-    "say",
-    "tell",
-    "the",
-    "this",
-    "to",
-    "und",
-    "was",
-    "what",
-    "with",
-    "you",
+    "a", "about", "all", "am", "an", "and", "anything", "are", "auf",
+    "bitte", "can", "der", "die", "das", "document", "documents", "ein",
+    "eine", "for", "from", "is", "it", "me", "mir", "of", "please",
+    "sage", "say", "tell", "the", "this", "to", "und", "was", "what",
+    "with", "you",
+}
+
+# Broad/overview queries — treat as summarise-all
+OVERVIEW_PHRASES = {
+    "topics", "topic", "summary", "summarize", "summarise", "overview",
+    "covered", "about", "contain", "contents", "cover", "describe",
+    "themen", "inhalt", "zusammenfassung", "überblick",          # German
+    "sujets", "résumé", "contenu", "aperçu",                     # French
 }
 
 
@@ -54,6 +30,14 @@ def _tokenize(text: str) -> list[str]:
 
 def _query_tokens(text: str) -> set[str]:
     return {token for token in _tokenize(text) if token not in STOPWORDS and len(token) > 2}
+
+
+def _is_overview_query(query_tokens: set[str]) -> bool:
+    """Return True when the query is asking for a broad summary rather than a specific fact."""
+    if len(query_tokens) <= 2:
+        return True
+    overview_hits = query_tokens & OVERVIEW_PHRASES
+    return len(overview_hits) >= 1
 
 
 def _split_passages(text: str, max_words: int = 90) -> list[str]:
@@ -67,7 +51,6 @@ def _split_passages(text: str, max_words: int = 90) -> list[str]:
             paragraphs.append(" ".join(current_words))
             current_words = words
             continue
-
         current_words.extend(words)
         if len(current_words) >= max_words:
             paragraphs.append(" ".join(current_words))
@@ -77,7 +60,6 @@ def _split_passages(text: str, max_words: int = 90) -> list[str]:
         paragraphs.append(" ".join(current_words))
 
     passages = []
-
     for paragraph in paragraphs:
         words = paragraph.split()
         for start in range(0, len(words), max_words):
@@ -89,8 +71,7 @@ def _split_passages(text: str, max_words: int = 90) -> list[str]:
 
 
 def _is_useful_overview_passage(passage: str) -> bool:
-    words = passage.split()
-    return len(words) >= 8
+    return len(passage.split()) >= 8
 
 
 def _score_passage(query_tokens: set[str], passage: str) -> int:
@@ -106,7 +87,6 @@ def _document_passages(document: models.Document) -> list[str]:
     file_path = Path(document.file_path)
     if not file_path.exists():
         return []
-
     text = read_pdf(str(file_path))
     return _split_passages(text)
 
@@ -120,6 +100,7 @@ def _metadata_passage(document: models.Document, passages: list[str]) -> str:
 
 
 def _overview_results(documents: list[models.Document], limit: int) -> list[dict]:
+    """Return multiple rich passages per document so overview questions get enough context."""
     results = []
 
     for document in documents:
@@ -127,21 +108,21 @@ def _overview_results(documents: list[models.Document], limit: int) -> list[dict
             continue
 
         passages = _document_passages(document)
-        useful_passage = next((passage for passage in passages if _is_useful_overview_passage(passage)), None)
-        if useful_passage:
-            results.append(
-                {
-                    "document_id": document.id,
-                    "filename": document.filename,
-                    "score": 0,
-                    "passage": useful_passage,
-                }
-            )
+        useful = [p for p in passages if _is_useful_overview_passage(p)]
+
+        # Take up to 3 passages per document for rich context
+        for passage in useful[:3]:
+            results.append({
+                "document_id": document.id,
+                "filename": document.filename,
+                "score": 0,
+                "passage": passage,
+            })
 
         if len(results) >= limit:
             break
 
-    return results
+    return results[:limit]
 
 
 def _diversified_results(results: list[dict], document_ids: list[int], limit: int) -> list[dict]:
@@ -154,7 +135,6 @@ def _diversified_results(results: list[dict], document_ids: list[int], limit: in
                 selected.append(result)
                 used_indexes.add(index)
                 break
-
         if len(selected) >= limit:
             return selected
 
@@ -187,11 +167,14 @@ def search_documents(
         "Document search filter document_ids=%s document_id=%s matched_documents=%s",
         document_ids,
         document_id,
-        [document.id for document in documents],
+        [d.id for d in documents],
     )
 
-    if not query_tokens:
-        return _overview_results(documents, limit)
+    # Broad/overview questions — skip keyword search and return rich passages
+    if not query_tokens or _is_overview_query(query_tokens):
+        logger.warning("Overview query detected — returning rich multi-passage overview")
+        overview_limit = max(limit, len(documents) * 3)
+        return _overview_results(documents, overview_limit)
 
     results = []
     chunk_stats = {}
@@ -207,14 +190,12 @@ def search_documents(
             score = _score_passage(query_tokens, passage)
             if score > 0:
                 matches_for_document += 1
-                results.append(
-                    {
-                        "document_id": document.id,
-                        "filename": document.filename,
-                        "score": score,
-                        "passage": passage,
-                    }
-                )
+                results.append({
+                    "document_id": document.id,
+                    "filename": document.filename,
+                    "score": score,
+                    "passage": passage,
+                })
         chunk_stats[document.id] = {
             "filename": document.filename,
             "chunks": len(passages_with_metadata),
@@ -223,13 +204,15 @@ def search_documents(
 
     logger.warning("Document search chunk stats=%s", chunk_stats)
 
-    results.sort(key=lambda result: result["score"], reverse=True)
+    results.sort(key=lambda r: r["score"], reverse=True)
     if results:
         if document_ids and len(document_ids) > 1:
             return _diversified_results(results, document_ids, limit)
         return results[:limit]
 
-    return _overview_results(documents, limit)
+    # No keyword hits — fall back to rich overview
+    logger.warning("No keyword matches — falling back to overview results")
+    return _overview_results(documents, max(limit, len(documents) * 3))
 
 
 def build_document_answer(query: str, results: list[dict]) -> str:
