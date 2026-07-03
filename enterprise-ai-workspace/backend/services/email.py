@@ -1,6 +1,6 @@
 import os
 from sendgrid import SendGridAPIClient
-from sendgrid.helpers.mail import Mail
+from sendgrid.helpers.mail import Email, Mail
 
 SENDGRID_API_KEY = os.getenv("SENDGRID_API_KEY", "")
 SENDGRID_FROM_EMAIL = os.getenv("SENDGRID_FROM_EMAIL", "")
@@ -80,7 +80,7 @@ def send_password_reset_email(recipient_email: str, reset_token: str) -> bool:
 
     try:
         message = Mail(
-            from_email=("Ogelytics AI Workspace", SENDGRID_FROM_EMAIL),
+            from_email=Email(SENDGRID_FROM_EMAIL, "Ogelytics AI Workspace"),
             to_emails=recipient_email,
             subject=subject,
             html_content=body_html,
