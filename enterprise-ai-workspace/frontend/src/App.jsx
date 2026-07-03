@@ -11,6 +11,8 @@ import Documents from './pages/Documents';
 import AiChat from './pages/AiChat';
 import Teams from './pages/Teams';
 import Analytics from './pages/Analytics';
+import Admin from './pages/Admin';
+import Billing from './pages/Billing';
 
 export default function App() {
   return (
@@ -28,6 +30,9 @@ export default function App() {
             <Route path="/chat" element={<AiChat />} />
             <Route path="/teams" element={<Teams />} />
             <Route path="/analytics" element={<Analytics />} />
+            <Route path="/admin" element={<Admin />} />
+            <Route path="/billing" element={<Billing />} />
+            <Route path="/billing/success" element={<Billing />} />
           </Route>
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

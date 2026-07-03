@@ -37,6 +37,11 @@ class User(Base):
     email = Column(String, unique=True, nullable=False, index=True)
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
+    is_admin = Column(Boolean, default=False, nullable=False)
+    stripe_customer_id = Column(String, nullable=True)
+    stripe_subscription_id = Column(String, nullable=True)
+    subscription_plan = Column(String, nullable=True, default="free")  # free | pro | enterprise
+    subscription_status = Column(String, nullable=True)               # active | canceled | past_due
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 
@@ -67,6 +72,16 @@ class AIQuery(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     query_text = Column(String, nullable=False)
     query_type = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
+
+class DocumentShare(Base):
+    __tablename__ = "document_shares"
+
+    id = Column(Integer, primary_key=True, index=True)
+    document_id = Column(Integer, ForeignKey("documents.id"), nullable=False)
+    shared_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    shared_with = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 

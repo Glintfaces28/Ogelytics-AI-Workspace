@@ -40,6 +40,17 @@ def run_migrations(engine):
     migrations = [
         "ALTER TABLE documents ADD COLUMN IF NOT EXISTS storage_url VARCHAR",
         "ALTER TABLE documents ADD COLUMN IF NOT EXISTS text_content TEXT",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN NOT NULL DEFAULT FALSE",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_plan VARCHAR DEFAULT 'free'",
+        "ALTER TABLE users ADD COLUMN IF NOT EXISTS subscription_status VARCHAR",
+        # Auto-promote the earliest registered user to admin if no admin exists yet
+        """
+        UPDATE users SET is_admin = TRUE
+        WHERE id = (SELECT MIN(id) FROM users)
+          AND NOT EXISTS (SELECT 1 FROM users WHERE is_admin = TRUE)
+        """,
     ]
     with engine.connect() as conn:
         for sql in migrations:

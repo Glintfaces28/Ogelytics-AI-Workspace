@@ -2,8 +2,40 @@ import { useEffect, useRef, useState } from 'react';
 import {
   Send, Bot, User, Loader2, FileText, CheckSquare, Square,
   Plus, Trash2, MessageSquare, ChevronLeft, ChevronRight, Pencil, Check, X,
+  Download,
 } from 'lucide-react';
 import api from '../api/client';
+
+// ── Export helpers ────────────────────────────────────────────────────────────
+
+function downloadText(content, filename) {
+  const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function formatConversation(messages) {
+  const date = new Date().toLocaleString();
+  let out = `OGELYTICS AI WORKSPACE — CHAT EXPORT\nGenerated: ${date}\n${'='.repeat(50)}\n\n`;
+  for (const msg of messages) {
+    if (msg.role === 'assistant' && msg.content.startsWith('Hello!')) continue;
+    if (msg.role === 'user') {
+      out += `Q: ${msg.content}\n\n`;
+    } else {
+      out += `A: ${msg.content}\n`;
+      if (msg.sources?.length) {
+        out += '\nSources:\n';
+        msg.sources.forEach(s => { out += `  • ${s.filename}: ${s.passage?.slice(0, 120)}...\n`; });
+      }
+      out += '\n' + '-'.repeat(50) + '\n\n';
+    }
+  }
+  return out;
+}
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -33,8 +65,20 @@ const WELCOME = { role: 'assistant', content: 'Hello! Ask me anything about your
 
 // ── Message bubble ────────────────────────────────────────────────────────────
 
-function Message({ msg }) {
+function Message({ msg, index }) {
   const isUser = msg.role === 'user';
+
+  function downloadAnswer() {
+    const date = new Date().toLocaleString();
+    let content = `OGELYTICS AI WORKSPACE — ANSWER EXPORT\nGenerated: ${date}\n${'='.repeat(50)}\n\n`;
+    content += `A: ${msg.content}\n`;
+    if (msg.sources?.length) {
+      content += '\nSources:\n';
+      msg.sources.forEach(s => { content += `  • ${s.filename}: ${s.passage?.slice(0, 200)}\n`; });
+    }
+    downloadText(content, `ogelytics-answer-${index}.txt`);
+  }
+
   return (
     <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : ''}`}>
       <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
@@ -50,6 +94,15 @@ function Message({ msg }) {
         }`}>
           {msg.content}
         </div>
+        {!isUser && (
+          <button
+            onClick={downloadAnswer}
+            title="Download this answer"
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-600 transition-colors px-1"
+          >
+            <Download size={12} /> Download answer
+          </button>
+        )}
         {msg.sources && msg.sources.length > 0 && (
           <div className="space-y-1 w-full">
             <p className="text-xs text-gray-400 px-1">Sources</p>
@@ -350,10 +403,18 @@ export default function AiChat() {
           >
             {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
           </button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-xl font-bold text-gray-900">AI Chat</h1>
             <p className="text-gray-500 text-sm">Ask questions about your uploaded documents.</p>
           </div>
+          {messages.length > 1 && (
+            <button
+              onClick={() => downloadText(formatConversation(messages), `ogelytics-chat-${Date.now()}.txt`)}
+              className="flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 border border-gray-200 hover:border-indigo-300 rounded-lg px-3 py-1.5 transition-colors"
+            >
+              <Download size={14} /> Export chat
+            </button>
+          )}
         </div>
 
         {/* Messages */}
@@ -364,7 +425,7 @@ export default function AiChat() {
             </div>
           ) : (
             <>
-              {messages.map((msg, i) => <Message key={i} msg={msg} />)}
+              {messages.map((msg, i) => <Message key={i} msg={msg} index={i} />)}
               {sending && (
                 <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0">

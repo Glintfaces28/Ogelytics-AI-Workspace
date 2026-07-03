@@ -11,6 +11,7 @@ function userFromToken(accessToken) {
       id: payload.user_id,
       email: payload.sub,
       username: payload.sub?.split('@')[0] || 'User',
+      is_admin: payload.is_admin === true,
     };
   } catch {
     return null;

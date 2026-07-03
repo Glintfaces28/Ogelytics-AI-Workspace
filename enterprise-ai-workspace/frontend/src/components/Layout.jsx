@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, FileText, MessageSquare, Users,
-  BarChart3, LogOut, Brain, Menu, X,
+  BarChart3, LogOut, Brain, Menu, X, ShieldCheck, CreditCard,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,6 +12,7 @@ const navItems = [
   { to: '/chat', label: 'AI Chat', icon: MessageSquare },
   { to: '/teams', label: 'Teams', icon: Users },
   { to: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { to: '/billing', label: 'Billing', icon: CreditCard },
 ];
 
 function SidebarNav({ onClose }) {
@@ -56,6 +57,22 @@ function SidebarNav({ onClose }) {
             {label}
           </NavLink>
         ))}
+        {user?.is_admin && (
+          <NavLink
+            to="/admin"
+            onClick={onClose}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-amber-500 text-white'
+                  : 'text-amber-400 hover:bg-slate-800 hover:text-amber-300'
+              }`
+            }
+          >
+            <ShieldCheck size={17} />
+            Admin
+          </NavLink>
+        )}
       </nav>
 
       <div className="p-4 border-t border-slate-700">

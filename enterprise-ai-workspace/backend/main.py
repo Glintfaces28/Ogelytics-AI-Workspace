@@ -4,13 +4,16 @@ import models
 from database import Base, engine
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routers.admin import router as admin_router
 from routers.ai import router as ai_router
+from routers.billing import router as billing_router
 from routers.analytics import router as analytics_router
 from routers.auth import router as auth_router
 from routers.chat_history import router as chat_history_router
 from routers.documents import router as documents_router
 from routers.oauth import router as oauth_router
 from routers.reports import router as reports_router
+from routers.sharing import router as sharing_router
 from routers.teams import router as teams_router
 
 Base.metadata.create_all(bind=engine)
@@ -54,10 +57,13 @@ def health():
 
 
 app.include_router(auth_router)
+app.include_router(admin_router)
+app.include_router(billing_router)
 app.include_router(oauth_router)
 app.include_router(documents_router)
 app.include_router(ai_router)
 app.include_router(chat_history_router)
+app.include_router(sharing_router)
 app.include_router(teams_router)
 app.include_router(reports_router)
 app.include_router(analytics_router)

@@ -74,6 +74,14 @@ def chat_with_documents(
         db.flush()  # assign ID without committing yet
 
     # ── Generate answer ──────────────────────────────────────────────────────
+    # Include docs shared with this user in search scope
+    shared_ids = [
+        s.document_id for s in
+        db.query(models.DocumentShare).filter(
+            models.DocumentShare.shared_with == current_user.id
+        ).all()
+    ]
+
     results = search_documents(
         db=db,
         query=request.question,
@@ -81,6 +89,7 @@ def chat_with_documents(
         document_id=request.document_id,
         document_ids=request.document_ids,
         user_id=current_user.id,
+        shared_document_ids=shared_ids or None,
     )
     if is_openai_configured():
         try:

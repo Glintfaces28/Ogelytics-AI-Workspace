@@ -11,3 +11,4 @@ sendgrid
 openai
 supabase
 httpx
+stripe
