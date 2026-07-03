@@ -46,12 +46,43 @@ class ChatRequest(BaseModel):
     document_id: int | None = None
     document_ids: list[int] | None = None
     max_results: int = Field(default=5, ge=1, le=20)
+    session_id: int | None = None
 
 
 class ChatResponse(BaseModel):
     question: str
     answer: str
     sources: list[DocumentSearchResult]
+    session_id: int
+
+
+class ChatMessageOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    session_id: int
+    role: str
+    content: str
+    sources: list[DocumentSearchResult] | None = None
+    created_at: datetime
+
+
+class ChatSessionOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    title: str
+    created_at: datetime
+    updated_at: datetime
+    message_count: int = 0
+
+
+class ChatSessionDetailOut(ChatSessionOut):
+    messages: list[ChatMessageOut] = []
+
+
+class ChatSessionRename(BaseModel):
+    title: str = Field(..., min_length=1, max_length=200)
 
 
 class TeamCreate(BaseModel):

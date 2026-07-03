@@ -1,4 +1,6 @@
+import json
 import logging
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
@@ -51,11 +53,27 @@ def chat_with_documents(
         request.document_id,
         current_user.id,
     )
-    logger.debug("AI chat system prompt: %s", SYSTEM_PROMPT.strip())
 
     db.add(models.AIQuery(user_id=current_user.id, query_text=request.question, query_type="chat"))
-    db.commit()
 
+    # ── Chat session management ──────────────────────────────────────────────
+    if request.session_id:
+        session = db.query(models.ChatSession).filter(
+            models.ChatSession.id == request.session_id,
+            models.ChatSession.user_id == current_user.id,
+        ).first()
+        if not session:
+            raise HTTPException(status_code=404, detail="Chat session not found")
+    else:
+        # Auto-title from first question (max 80 chars)
+        title = request.question.strip()
+        if len(title) > 80:
+            title = title[:77] + "…"
+        session = models.ChatSession(user_id=current_user.id, title=title)
+        db.add(session)
+        db.flush()  # assign ID without committing yet
+
+    # ── Generate answer ──────────────────────────────────────────────────────
     results = search_documents(
         db=db,
         query=request.question,
@@ -73,8 +91,25 @@ def chat_with_documents(
     else:
         answer = build_document_answer(request.question, results)
 
+    # ── Persist messages ─────────────────────────────────────────────────────
+    db.add(models.ChatMessage(
+        session_id=session.id,
+        role="user",
+        content=request.question,
+    ))
+    sources_json = json.dumps([r.model_dump() for r in results]) if results else None
+    db.add(models.ChatMessage(
+        session_id=session.id,
+        role="assistant",
+        content=answer,
+        sources=sources_json,
+    ))
+    session.updated_at = datetime.utcnow()
+    db.commit()
+
     return {
         "question": request.question,
         "answer": answer,
         "sources": results,
+        "session_id": session.id,
     }
