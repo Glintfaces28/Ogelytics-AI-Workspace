@@ -60,6 +60,13 @@ class UserPatch(BaseModel):
     is_admin: bool | None = None
 
 
+class SubscriptionPatch(BaseModel):
+    stripe_customer_id: str | None = None
+    stripe_subscription_id: str | None = None
+    subscription_plan: str | None = None   # free | pro | enterprise
+    subscription_status: str | None = None  # active | canceled | past_due
+
+
 # ── Endpoints ─────────────────────────────────────────────────────────────────
 
 @router.get("/stats", response_model=AdminStats)
@@ -133,6 +140,30 @@ def update_user(
         is_active=user.is_active, is_admin=user.is_admin,
         created_at=user.created_at, document_count=doc_count or 0,
     )
+
+
+@router.patch("/users/{user_id}/subscription")
+def update_subscription(
+    user_id: int,
+    body: SubscriptionPatch,
+    db: Session = Depends(get_db),
+    _: models.User = Depends(require_admin),
+):
+    """Admin: manually set a user's subscription plan (e.g. after a webhook miss)."""
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    if body.stripe_customer_id is not None:
+        user.stripe_customer_id = body.stripe_customer_id
+    if body.stripe_subscription_id is not None:
+        user.stripe_subscription_id = body.stripe_subscription_id
+    if body.subscription_plan is not None:
+        user.subscription_plan = body.subscription_plan
+    if body.subscription_status is not None:
+        user.subscription_status = body.subscription_status
+    db.commit()
+    return {"user_id": user_id, "plan": user.subscription_plan, "status": user.subscription_status}
 
 
 @router.delete("/users/{user_id}", status_code=204)
