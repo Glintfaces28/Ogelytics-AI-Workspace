@@ -1,6 +1,6 @@
 import os
 
-from openai import OpenAI
+# openai is imported lazily (inside _get_client) to reduce startup memory usage.
 
 SYSTEM_PROMPT = """
 You are an enterprise document assistant. Use only the provided document context to answer.
@@ -15,9 +15,20 @@ If the context does not contain enough information, say so clearly in the user's
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 
+_client = None  # singleton — created once on first AI request
+
 
 def is_openai_configured() -> bool:
     return bool(OPENAI_API_KEY and OPENAI_API_KEY != "your_openai_api_key_here")
+
+
+def _get_client():
+    """Return a cached OpenAI client; import and create it lazily."""
+    global _client
+    if _client is None:
+        from openai import OpenAI  # noqa: PLC0415 — intentional lazy import
+        _client = OpenAI(api_key=OPENAI_API_KEY)
+    return _client
 
 
 def build_context(results: list[dict]) -> str:
@@ -40,7 +51,7 @@ def build_context(results: list[dict]) -> str:
 
 
 def generate_answer(question: str, results: list[dict]) -> str:
-    client = OpenAI(api_key=OPENAI_API_KEY)
+    client = _get_client()
     response = client.chat.completions.create(
         model=OPENAI_MODEL,
         messages=[
