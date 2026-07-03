@@ -106,7 +106,7 @@ def chat_with_documents(
         role="user",
         content=request.question,
     ))
-    sources_json = json.dumps([r.model_dump() for r in results]) if results else None
+    sources_json = json.dumps([r if isinstance(r, dict) else r.model_dump() for r in results]) if results else None
     db.add(models.ChatMessage(
         session_id=session.id,
         role="assistant",
