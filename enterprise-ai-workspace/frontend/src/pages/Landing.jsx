@@ -115,8 +115,8 @@ function Hero() {
                 <Brain className="text-indigo-400" size={18} />
                 <span className="text-white text-sm font-bold">Ogelytics AI</span>
               </div>
-              {['Dashboard', 'Documents', 'AI Chat', 'Teams', 'Billing'].map((item, i) => (
-                <div key={item} className={`flex items-center gap-2 px-2 py-2 rounded-lg mb-1 text-xs ${i === 2 ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>
+              {[t('nav_dashboard'), t('nav_documents'), t('nav_chat'), t('nav_teams'), t('nav_billing')].map((item, i) => (
+                <div key={i} className={`flex items-center gap-2 px-2 py-2 rounded-lg mb-1 text-xs ${i === 2 ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>
                   <div className="w-3 h-3 rounded-sm bg-current opacity-60" />
                   {item}
                 </div>
@@ -141,7 +141,7 @@ function Hero() {
                 </div>
               </div>
               <div className="flex items-center gap-3 bg-slate-800 rounded-xl px-4 py-3">
-                <span className="text-slate-500 text-sm flex-1">Ask anything about your documents...</span>
+                <span className="text-slate-500 text-sm flex-1">{t('chat_placeholder')}</span>
                 <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
                   <ArrowRight size={14} className="text-white" />
                 </div>

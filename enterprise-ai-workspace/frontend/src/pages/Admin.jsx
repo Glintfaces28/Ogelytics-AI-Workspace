@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 function bytes(n) {
   if (n < 1024) return `${n} B`;
@@ -36,6 +37,7 @@ function StatCard({ icon: Icon, label, value, color = 'indigo' }) {
 // ── Users tab ─────────────────────────────────────────────────────────────────
 
 function UsersTab() {
+  const { t } = useLanguage();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user: me } = useAuth();
@@ -62,13 +64,13 @@ function UsersTab() {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-3 px-4 font-semibold text-gray-600">User</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-600">Email</th>
-            <th className="text-center py-3 px-4 font-semibold text-gray-600">Docs</th>
-            <th className="text-center py-3 px-4 font-semibold text-gray-600">Status</th>
-            <th className="text-center py-3 px-4 font-semibold text-gray-600">Role</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-600">Joined</th>
-            <th className="text-right py-3 px-4 font-semibold text-gray-600">Actions</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-600">{t('admin_col_user')}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-600">{t('admin_col_email')}</th>
+            <th className="text-center py-3 px-4 font-semibold text-gray-600">{t('admin_col_docs')}</th>
+            <th className="text-center py-3 px-4 font-semibold text-gray-600">{t('admin_col_status')}</th>
+            <th className="text-center py-3 px-4 font-semibold text-gray-600">{t('admin_col_role')}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-600">{t('admin_col_joined')}</th>
+            <th className="text-right py-3 px-4 font-semibold text-gray-600">{t('admin_col_actions')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -82,7 +84,7 @@ function UsersTab() {
                   u.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-600'
                 }`}>
                   {u.is_active ? <CheckCircle size={11} /> : <XCircle size={11} />}
-                  {u.is_active ? 'Active' : 'Suspended'}
+                  {u.is_active ? t('admin_status_active') : t('admin_status_suspended')}
                 </span>
               </td>
               <td className="py-3 px-4 text-center">
@@ -126,7 +128,7 @@ function UsersTab() {
           ))}
         </tbody>
       </table>
-      {users.length === 0 && <p className="text-center text-gray-400 py-12">No users found.</p>}
+      {users.length === 0 && <p className="text-center text-gray-400 py-12">{t('admin_no_users')}</p>}
     </div>
   );
 }
@@ -134,6 +136,7 @@ function UsersTab() {
 // ── Documents tab ─────────────────────────────────────────────────────────────
 
 function DocumentsTab() {
+  const { t } = useLanguage();
   const [docs, setDocs] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -148,10 +151,10 @@ function DocumentsTab() {
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200">
-            <th className="text-left py-3 px-4 font-semibold text-gray-600">Filename</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-600">Owner</th>
-            <th className="text-right py-3 px-4 font-semibold text-gray-600">Size</th>
-            <th className="text-left py-3 px-4 font-semibold text-gray-600">Uploaded</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-600">{t('admin_col_filename')}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-600">{t('admin_col_owner')}</th>
+            <th className="text-right py-3 px-4 font-semibold text-gray-600">{t('admin_col_size')}</th>
+            <th className="text-left py-3 px-4 font-semibold text-gray-600">{t('admin_col_uploaded')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
@@ -170,7 +173,7 @@ function DocumentsTab() {
           ))}
         </tbody>
       </table>
-      {docs.length === 0 && <p className="text-center text-gray-400 py-12">No documents found.</p>}
+      {docs.length === 0 && <p className="text-center text-gray-400 py-12">{t('admin_no_docs')}</p>}
     </div>
   );
 }
@@ -178,6 +181,7 @@ function DocumentsTab() {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Admin() {
+  const { t } = useLanguage();
   const { user } = useAuth();
   const navigate = useNavigate();
   const [tab, setTab] = useState('stats');
@@ -191,9 +195,9 @@ export default function Admin() {
   if (!user?.is_admin) return null;
 
   const tabs = [
-    { id: 'stats', label: 'Overview', icon: BarChart3 },
-    { id: 'users', label: 'Users', icon: Users },
-    { id: 'documents', label: 'Documents', icon: FileText },
+    { id: 'stats', label: t('admin_tab_overview'), icon: BarChart3 },
+    { id: 'users', label: t('admin_tab_users'), icon: Users },
+    { id: 'documents', label: t('admin_tab_docs'), icon: FileText },
   ];
 
   return (
@@ -204,8 +208,8 @@ export default function Admin() {
           <ShieldCheck className="text-amber-600" size={20} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-          <p className="text-gray-500 text-sm">Manage users, documents, and workspace settings.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('admin_title')}</h1>
+          <p className="text-gray-500 text-sm">{t('admin_sub')}</p>
         </div>
       </div>
 
@@ -234,12 +238,12 @@ export default function Admin() {
               <div className="flex justify-center py-12"><Loader2 className="animate-spin text-indigo-400" size={28} /></div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <StatCard icon={Users} label="Total Users" value={stats.total_users} color="indigo" />
-                <StatCard icon={CheckCircle} label="Active Users" value={stats.active_users} color="green" />
-                <StatCard icon={FileText} label="Total Documents" value={stats.total_documents} color="indigo" />
-                <StatCard icon={HardDrive} label="Total Storage" value={bytes(stats.total_storage_bytes)} color="amber" />
-                <StatCard icon={BarChart3} label="AI Queries" value={stats.total_ai_queries} color="indigo" />
-                <StatCard icon={MessageSquare} label="Chat Sessions" value={stats.total_chat_sessions} color="green" />
+                <StatCard icon={Users} label={t('admin_stat_total_users')} value={stats.total_users} color="indigo" />
+                <StatCard icon={CheckCircle} label={t('admin_stat_active_users')} value={stats.active_users} color="green" />
+                <StatCard icon={FileText} label={t('admin_stat_total_docs')} value={stats.total_documents} color="indigo" />
+                <StatCard icon={HardDrive} label={t('admin_stat_storage')} value={bytes(stats.total_storage_bytes)} color="amber" />
+                <StatCard icon={BarChart3} label={t('admin_stat_queries')} value={stats.total_ai_queries} color="indigo" />
+                <StatCard icon={MessageSquare} label={t('admin_stat_sessions')} value={stats.total_chat_sessions} color="green" />
               </div>
             )}
           </div>

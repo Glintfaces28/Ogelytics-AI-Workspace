@@ -1,55 +1,10 @@
 import { useEffect, useState } from 'react';
 import { CheckCircle, Zap, Building2, Loader2, CreditCard, ExternalLink } from 'lucide-react';
 import api from '../api/client';
-
-const PLANS = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: '$0',
-    period: 'forever',
-    color: 'gray',
-    features: [
-      'Up to 10 documents',
-      'AI chat (limited)',
-      '1 team',
-      'Community support',
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: '$19',
-    period: 'per month',
-    color: 'indigo',
-    badge: 'Most popular',
-    features: [
-      'Unlimited documents',
-      'Full AI chat & history',
-      'Up to 10 teams',
-      'Document sharing',
-      'Export to PDF / Word',
-      'Priority email support',
-    ],
-  },
-  {
-    id: 'enterprise',
-    name: 'Enterprise',
-    price: '$49',
-    period: 'per month',
-    color: 'amber',
-    features: [
-      'Everything in Pro',
-      'Unlimited teams & members',
-      'Admin panel',
-      'Custom domain',
-      'Dedicated support',
-      'SLA guarantee',
-    ],
-  },
-];
+import { useLanguage } from '../context/LanguageContext';
 
 function PlanCard({ plan, currentPlan, onUpgrade, loading }) {
+  const { t } = useLanguage();
   const isCurrentPlan = plan.id === currentPlan;
   const colors = {
     gray: { border: 'border-gray-200', badge: '', btn: 'bg-gray-100 text-gray-700 hover:bg-gray-200', check: 'text-gray-500' },
@@ -67,7 +22,8 @@ function PlanCard({ plan, currentPlan, onUpgrade, loading }) {
       )}
       <div className="mb-4">
         <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
-        <div className="flex items-baseline gap-1 mt-1">
+        <p className="text-sm text-gray-500 mt-0.5">{plan.desc}</p>
+        <div className="flex items-baseline gap-1 mt-2">
           <span className="text-3xl font-extrabold text-gray-900">{plan.price}</span>
           <span className="text-gray-500 text-sm">{plan.period}</span>
         </div>
@@ -84,11 +40,11 @@ function PlanCard({ plan, currentPlan, onUpgrade, loading }) {
 
       {isCurrentPlan ? (
         <div className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-medium text-gray-600">
-          <CheckCircle size={15} className="text-green-500" /> Current plan
+          <CheckCircle size={15} className="text-green-500" /> {t('billing_current_plan_label')}
         </div>
       ) : plan.id === 'free' ? (
         <div className="py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-sm font-medium text-gray-400 text-center">
-          Downgrade via billing portal
+          {t('billing_downgrade')}
         </div>
       ) : (
         <button
@@ -96,7 +52,7 @@ function PlanCard({ plan, currentPlan, onUpgrade, loading }) {
           disabled={loading}
           className={`py-2.5 rounded-xl text-sm font-bold transition-colors disabled:opacity-60 ${c.btn}`}
         >
-          {loading ? <Loader2 size={16} className="animate-spin mx-auto" /> : `Upgrade to ${plan.name}`}
+          {loading ? <Loader2 size={16} className="animate-spin mx-auto" /> : t('billing_upgrade_to', plan.name)}
         </button>
       )}
     </div>
@@ -104,14 +60,51 @@ function PlanCard({ plan, currentPlan, onUpgrade, loading }) {
 }
 
 export default function Billing() {
+  const { t } = useLanguage();
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [upgrading, setUpgrading] = useState(null);
   const [portalLoading, setPortalLoading] = useState(false);
   const [error, setError] = useState('');
 
+  const PLANS = [
+    {
+      id: 'free',
+      name: 'Free',
+      price: '$0',
+      period: t('price_forever'),
+      desc: t('price_free_desc'),
+      color: 'gray',
+      features: [t('price_free_f1'), t('price_free_f2'), t('price_free_f3'), t('price_free_f4')],
+    },
+    {
+      id: 'pro',
+      name: 'Pro',
+      price: '$19',
+      period: t('price_month'),
+      desc: t('price_pro_desc'),
+      color: 'indigo',
+      badge: t('price_badge'),
+      features: [
+        t('price_pro_f1'), t('price_pro_f2'), t('price_pro_f3'),
+        t('price_pro_f4'), t('price_pro_f5'), t('price_pro_f6'),
+      ],
+    },
+    {
+      id: 'enterprise',
+      name: 'Enterprise',
+      price: '$49',
+      period: t('price_month'),
+      desc: t('price_ent_desc'),
+      color: 'amber',
+      features: [
+        t('price_ent_f1'), t('price_ent_f2'), t('price_ent_f3'),
+        t('price_ent_f4'), t('price_ent_f5'), t('price_ent_f6'),
+      ],
+    },
+  ];
+
   useEffect(() => {
-    // Check for success redirect from Stripe
     const params = new URLSearchParams(window.location.search);
     if (params.get('session_id')) {
       window.history.replaceState({}, '', '/billing');
@@ -130,7 +123,7 @@ export default function Billing() {
       const r = await api.post(`/billing/checkout?plan=${planId}`);
       window.location.href = r.data.checkout_url;
     } catch (err) {
-      setError(err.response?.data?.detail || 'Could not start checkout. Please try again.');
+      setError(err.response?.data?.detail || t('billing_checkout_error'));
       setUpgrading(null);
     }
   }
@@ -141,7 +134,7 @@ export default function Billing() {
       const r = await api.post('/billing/portal');
       window.location.href = r.data.portal_url;
     } catch (err) {
-      setError(err.response?.data?.detail || 'Could not open billing portal.');
+      setError(err.response?.data?.detail || t('billing_portal_error'));
       setPortalLoading(false);
     }
   }
@@ -150,13 +143,11 @@ export default function Billing() {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
-      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Billing & Plans</h1>
-        <p className="text-gray-500 mt-1">Choose the plan that fits your workspace.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('billing_plans_title')}</h1>
+        <p className="text-gray-500 mt-1">{t('billing_plans_sub')}</p>
       </div>
 
-      {/* Current status bar */}
       {!loading && (
         <div className="flex items-center justify-between bg-white border border-gray-200 rounded-xl px-5 py-4 mb-8">
           <div className="flex items-center gap-3">
@@ -171,7 +162,7 @@ export default function Billing() {
             <div>
               <p className="font-semibold text-gray-900 capitalize">{currentPlan} Plan</p>
               <p className="text-xs text-gray-500">
-                {status?.is_active ? 'Subscription active' : 'Free tier'}
+                {status?.is_active ? t('billing_sub_active') : t('billing_free_tier')}
               </p>
             </div>
           </div>
@@ -184,7 +175,7 @@ export default function Billing() {
               {portalLoading
                 ? <Loader2 size={14} className="animate-spin" />
                 : <ExternalLink size={14} />}
-              Manage / Cancel
+              {t('billing_manage_cancel')}
             </button>
           )}
         </div>
@@ -196,7 +187,6 @@ export default function Billing() {
         </div>
       )}
 
-      {/* Plan cards */}
       {loading ? (
         <div className="flex justify-center py-16">
           <Loader2 size={28} className="animate-spin text-indigo-400" />
@@ -216,7 +206,7 @@ export default function Billing() {
       )}
 
       <p className="text-center text-xs text-gray-400 mt-8">
-        Payments are securely processed by Stripe. Cancel anytime.
+        {t('billing_stripe_note')}
       </p>
     </div>
   );

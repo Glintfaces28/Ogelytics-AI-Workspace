@@ -16,6 +16,7 @@ import {
   YAxis,
 } from 'recharts';
 import api from '../api/client';
+import { useLanguage } from '../context/LanguageContext';
 
 function formatBytes(bytes) {
   if (!bytes) return '0 KB';
@@ -89,6 +90,7 @@ function ChartCard({ title, data, dataKey, stroke }) {
 }
 
 export default function Analytics() {
+  const { t } = useLanguage();
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -113,8 +115,8 @@ export default function Analytics() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-        <p className="text-gray-500 mt-1">Workspace activity, storage, and AI usage.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('analytics_title')}</h1>
+        <p className="text-gray-500 mt-1">{t('analytics_subtitle')}</p>
       </div>
 
       {error && (
@@ -126,25 +128,25 @@ export default function Analytics() {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4 mb-6">
         <MetricCard
           icon={FileText}
-          label="Total documents"
+          label={t('analytics_total_docs')}
           value={totals.documents ?? 0}
           color="bg-indigo-600"
         />
         <MetricCard
           icon={Activity}
-          label="Total AI queries"
+          label={t('analytics_total_queries')}
           value={totals.ai_queries ?? 0}
           color="bg-emerald-600"
         />
         <MetricCard
           icon={HardDrive}
-          label="Storage used"
+          label={t('analytics_storage_used')}
           value={formatBytes(totals.storage_bytes)}
           color="bg-amber-500"
         />
         <MetricCard
           icon={Users}
-          label="Team members"
+          label={t('analytics_team_members')}
           value={totals.team_members ?? 0}
           color="bg-rose-500"
         />
@@ -152,13 +154,13 @@ export default function Analytics() {
 
       <div className="grid gap-6 xl:grid-cols-2">
         <ChartCard
-          title="Documents uploaded over time"
+          title={t('analytics_docs_over_time')}
           data={analytics?.documents_over_time || []}
           dataKey="documents"
           stroke="#4F46E5"
         />
         <ChartCard
-          title="AI queries over time"
+          title={t('analytics_queries_over_time')}
           data={analytics?.ai_queries_over_time || []}
           dataKey="ai_queries"
           stroke="#059669"
