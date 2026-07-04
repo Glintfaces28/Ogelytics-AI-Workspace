@@ -18,7 +18,7 @@ export default function Login() {
 
   // Already logged in → send to dashboard
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
   async function onSubmit(data) {
@@ -27,7 +27,7 @@ export default function Login() {
     try {
       const res = await api.post('/auth/login', data);
       login(res.data.access_token);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       if (!err.response) {
         setError(`Cannot connect to ${API_BASE_URL}. Browser error: ${err.message}`);

@@ -29,7 +29,7 @@ export default function Register() {
         password: data.password,
       });
       login(res.data.access_token, data.username);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       if (!err.response) {
         setError(`Cannot connect to ${API_BASE_URL}. Browser error: ${err.message}`);
