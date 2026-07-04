@@ -176,6 +176,24 @@ const en = {
   price_cta_pro: 'Start Pro',
   price_cta_ent: 'Start Enterprise',
 
+  // Pricing feature bullets
+  price_free_f1: 'Up to 10 documents',
+  price_free_f2: 'AI chat (limited)',
+  price_free_f3: '1 team',
+  price_free_f4: 'Community support',
+  price_pro_f1: 'Unlimited documents',
+  price_pro_f2: 'Full AI chat & history',
+  price_pro_f3: 'Up to 10 teams',
+  price_pro_f4: 'Document sharing',
+  price_pro_f5: 'Export to PDF / Word',
+  price_pro_f6: 'Priority email support',
+  price_ent_f1: 'Everything in Pro',
+  price_ent_f2: 'Unlimited teams & members',
+  price_ent_f3: 'Admin panel',
+  price_ent_f4: 'Custom domain',
+  price_ent_f5: 'Dedicated support',
+  price_ent_f6: 'SLA guarantee',
+
   // CTA banner
   cta_title: 'Ready to unlock your documents?',
   cta_sub: 'Join teams already using Ogelytics to get instant answers from their documents.',

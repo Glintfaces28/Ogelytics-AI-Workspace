@@ -176,6 +176,24 @@ const de = {
   price_cta_pro: 'Pro starten',
   price_cta_ent: 'Enterprise starten',
 
+  // Pricing feature bullets
+  price_free_f1: 'Bis zu 10 Dokumente',
+  price_free_f2: 'KI-Chat (begrenzt)',
+  price_free_f3: '1 Team',
+  price_free_f4: 'Community-Support',
+  price_pro_f1: 'Unbegrenzte Dokumente',
+  price_pro_f2: 'Vollständiger KI-Chat & Verlauf',
+  price_pro_f3: 'Bis zu 10 Teams',
+  price_pro_f4: 'Dokumente teilen',
+  price_pro_f5: 'Export als PDF / Word',
+  price_pro_f6: 'Prioritäts-E-Mail-Support',
+  price_ent_f1: 'Alles aus Pro',
+  price_ent_f2: 'Unbegrenzte Teams & Mitglieder',
+  price_ent_f3: 'Admin-Panel',
+  price_ent_f4: 'Eigene Domain',
+  price_ent_f5: 'Dedizierter Support',
+  price_ent_f6: 'SLA-Garantie',
+
   // CTA banner
   cta_title: 'Bereit, Ihre Dokumente zu erschließen?',
   cta_sub: 'Schließen Sie sich Teams an, die Ogelytics bereits nutzen, um sofortige Antworten aus ihren Dokumenten zu erhalten.',
