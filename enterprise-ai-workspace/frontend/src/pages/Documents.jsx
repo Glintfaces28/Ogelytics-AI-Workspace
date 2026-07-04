@@ -4,6 +4,7 @@ import {
   Share2, X, UserPlus, Users, Check,
 } from 'lucide-react';
 import api from '../api/client';
+import { useLanguage } from '../context/LanguageContext';
 
 function formatBytes(bytes) {
   if (!bytes) return '0 B';
@@ -21,6 +22,7 @@ function formatDate(iso) {
 // ── Share modal ───────────────────────────────────────────────────────────────
 
 function ShareModal({ doc, onClose }) {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [shares, setShares] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,9 +47,9 @@ function ShareModal({ doc, onClose }) {
       const r = await api.post(`/documents/${doc.id}/share`, { email: email.trim() });
       setShares(prev => [...prev, r.data]);
       setEmail('');
-      setSuccess(`Shared with ${r.data.shared_with_username}`);
+      setSuccess(`✓ ${r.data.shared_with_username}`);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Could not share document.');
+      setError(err.response?.data?.detail || t('share_error'));
     } finally {
       setSharing(false);
     }
@@ -67,7 +69,7 @@ function ShareModal({ doc, onClose }) {
         {/* Header */}
         <div className="flex items-start justify-between mb-5">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">Share Document</h2>
+            <h2 className="text-lg font-bold text-gray-900">{t('share_title')}</h2>
             <p className="text-sm text-gray-500 truncate max-w-xs mt-0.5">{doc.filename}</p>
           </div>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1">
@@ -79,7 +81,7 @@ function ShareModal({ doc, onClose }) {
         <form onSubmit={shareDoc} className="flex gap-2 mb-5">
           <input
             type="email"
-            placeholder="Enter colleague's email"
+            placeholder={t('share_placeholder')}
             value={email}
             onChange={e => setEmail(e.target.value)}
             className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -90,7 +92,7 @@ function ShareModal({ doc, onClose }) {
             className="flex items-center gap-1.5 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
           >
             {sharing ? <Loader2 size={14} className="animate-spin" /> : <UserPlus size={14} />}
-            Share
+            {t('share_btn')}
           </button>
         </form>
 
@@ -104,14 +106,14 @@ function ShareModal({ doc, onClose }) {
         {/* Current shares */}
         <div>
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-            Shared with
+            {t('share_with')}
           </p>
           {loading ? (
             <div className="flex justify-center py-4">
               <Loader2 size={18} className="animate-spin text-gray-400" />
             </div>
           ) : shares.length === 0 ? (
-            <p className="text-sm text-gray-400 py-3 text-center">Not shared with anyone yet.</p>
+            <p className="text-sm text-gray-400 py-3 text-center">{t('share_none')}</p>
           ) : (
             <div className="space-y-2">
               {shares.map(s => (
@@ -140,6 +142,7 @@ function ShareModal({ doc, onClose }) {
 // ── Main page ─────────────────────────────────────────────────────────────────
 
 export default function Documents() {
+  const { t } = useLanguage();
   const [documents, setDocuments] = useState([]);
   const [sharedDocs, setSharedDocs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -159,7 +162,7 @@ export default function Documents() {
         setDocuments(ownRes.data);
         setSharedDocs(sharedRes.data);
       })
-      .catch(() => setError('Could not load documents.'))
+      .catch(() => setError(t('doc_error_load')))
       .finally(() => setLoading(false));
   }
 
@@ -174,10 +177,10 @@ export default function Documents() {
     formData.append('file', file);
     try {
       await api.post('/upload', formData);
-      setSuccess(`"${file.name}" uploaded successfully.`);
+      setSuccess(`"${file.name}" ✓`);
       fetchDocuments();
     } catch (err) {
-      setError(err.response?.data?.detail || 'Upload failed.');
+      setError(err.response?.data?.detail || t('doc_error_upload'));
     } finally {
       setUploading(false);
     }
@@ -187,11 +190,11 @@ export default function Documents() {
   function handleDrop(e) { e.preventDefault(); setDragOver(false); uploadFile(e.dataTransfer.files[0]); }
 
   async function deleteDocument(id, filename) {
-    if (!confirm(`Delete "${filename}"?`)) return;
+    if (!confirm(t('doc_delete_confirm', filename))) return;
     try {
       await api.delete(`/documents/${id}`);
       setDocuments(prev => prev.filter(d => d.id !== id));
-    } catch { setError('Could not delete document.'); }
+    } catch { setError(t('doc_error_delete')); }
   }
 
   function downloadDocument(id) {
@@ -201,8 +204,8 @@ export default function Documents() {
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Documents</h1>
-        <p className="text-gray-500 mt-1">Upload, manage, and share your workspace documents.</p>
+        <h1 className="text-2xl font-bold text-gray-900">{t('doc_title')}</h1>
+        <p className="text-gray-500 mt-1">{t('doc_subtitle')}</p>
       </div>
 
       {/* Upload area */}
@@ -219,13 +222,13 @@ export default function Documents() {
         {uploading ? (
           <div className="flex flex-col items-center gap-2 text-indigo-600">
             <Loader2 size={32} className="animate-spin" />
-            <p className="text-sm font-medium">Uploading…</p>
+            <p className="text-sm font-medium">{t('doc_uploading')}</p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-2 text-gray-500">
             <Upload size={32} className="text-indigo-400" />
-            <p className="font-medium text-gray-700">Drop a file here or click to browse</p>
-            <p className="text-xs">PDF, DOCX, TXT and more</p>
+            <p className="font-medium text-gray-700">{t('doc_drop')}</p>
+            <p className="text-xs">{t('doc_types')}</p>
           </div>
         )}
       </div>
@@ -249,8 +252,8 @@ export default function Documents() {
       ) : documents.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <FileText size={40} className="mx-auto mb-3 opacity-40" />
-          <p className="font-medium">No documents yet</p>
-          <p className="text-sm">Upload your first file above.</p>
+          <p className="font-medium">{t('doc_no_docs')}</p>
+          <p className="text-sm">{t('doc_no_docs_sub')}</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -299,7 +302,7 @@ export default function Documents() {
         <div className="mt-10">
           <div className="flex items-center gap-2 mb-4">
             <Users size={18} className="text-indigo-500" />
-            <h2 className="text-lg font-semibold text-gray-800">Shared with me</h2>
+            <h2 className="text-lg font-semibold text-gray-800">{t('doc_shared_title')}</h2>
             <span className="bg-indigo-100 text-indigo-700 text-xs font-medium px-2 py-0.5 rounded-full">
               {sharedDocs.length}
             </span>
@@ -314,7 +317,7 @@ export default function Documents() {
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-gray-900 text-sm truncate">{doc.filename}</p>
                   <p className="text-gray-500 text-xs">
-                    {formatBytes(doc.file_size)} · Shared by <strong>{doc.shared_by_username}</strong>
+                    {formatBytes(doc.file_size)} · {t('doc_shared_by')} <strong>{doc.shared_by_username}</strong>
                   </p>
                 </div>
                 <button

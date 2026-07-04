@@ -4,8 +4,34 @@ import { useForm } from 'react-hook-form';
 import { Brain, Loader2, Eye, EyeOff } from 'lucide-react';
 import api, { API_BASE_URL } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
+
+function LangToggle() {
+  const { lang, switchLang } = useLanguage();
+  return (
+    <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 mb-6 w-fit mx-auto">
+      <button
+        onClick={() => switchLang('en')}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+          lang === 'en' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+        }`}
+      >
+        🇬🇧 EN
+      </button>
+      <button
+        onClick={() => switchLang('de')}
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+          lang === 'de' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+        }`}
+      >
+        🇩🇪 DE
+      </button>
+    </div>
+  );
+}
 
 export default function Login() {
+  const { t } = useLanguage();
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -16,7 +42,6 @@ export default function Login() {
   const successMessage = location.state?.message || '';
   const { isAuthenticated } = useAuth();
 
-  // Already logged in → send to dashboard
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -32,7 +57,7 @@ export default function Login() {
       if (!err.response) {
         setError(`Cannot connect to ${API_BASE_URL}. Browser error: ${err.message}`);
       } else {
-        setError(err.response.data?.detail || 'Invalid email or password.');
+        setError(err.response.data?.detail || t('login_error'));
       }
     } finally {
       setLoading(false);
@@ -42,14 +67,16 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="flex items-center justify-center gap-3 mb-8">
+        <div className="flex items-center justify-center gap-3 mb-6">
           <Brain className="text-indigo-400" size={34} />
           <h1 className="text-white text-2xl font-bold">Ogelytics AI Workspace</h1>
         </div>
 
+        <LangToggle />
+
         <div className="bg-white rounded-2xl shadow-xl p-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-1">Welcome back</h2>
-          <p className="text-gray-500 text-sm mb-6">Sign in to your workspace</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-1">{t('login_title')}</h2>
+          <p className="text-gray-500 text-sm mb-6">{t('login_subtitle')}</p>
 
           {successMessage && (
             <div className="bg-green-50 border border-green-200 text-green-700 rounded-lg px-4 py-3 mb-4 text-sm">
@@ -75,7 +102,7 @@ export default function Login() {
               <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
               <path fill="none" d="M0 0h48v48H0z"/>
             </svg>
-            Continue with Google
+            {t('login_google')}
           </a>
 
           <div className="relative mb-4">
@@ -83,40 +110,37 @@ export default function Login() {
               <div className="w-full border-t border-gray-200" />
             </div>
             <div className="relative flex justify-center text-xs text-gray-400 uppercase">
-              <span className="bg-white px-2">or sign in with email</span>
+              <span className="bg-white px-2">or</span>
             </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Email address
+                {t('login_email')}
               </label>
               <input
-                {...register('email', { required: 'Email is required' })}
+                {...register('email', { required: true })}
                 id="email"
                 type="email"
                 autoComplete="email"
                 placeholder="you@company.com"
                 className="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
-              {errors.email && (
-                <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
-              )}
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="block text-sm font-medium text-gray-700">
-                  Password
+                  {t('login_password')}
                 </label>
                 <Link to="/forgot-password" className="text-xs text-indigo-600 hover:underline">
-                  Forgot password?
+                  {t('login_forgot')}
                 </Link>
               </div>
               <div className="relative">
                 <input
-                  {...register('password', { required: 'Password is required' })}
+                  {...register('password', { required: true })}
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
@@ -132,9 +156,6 @@ export default function Login() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
-              )}
             </div>
 
             <button
@@ -143,14 +164,14 @@ export default function Login() {
               className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-medium hover:bg-indigo-700 disabled:opacity-60 transition-colors flex items-center justify-center gap-2"
             >
               {loading && <Loader2 size={16} className="animate-spin" />}
-              {loading ? 'Signing in…' : 'Sign in'}
+              {loading ? t('loading') : t('login_btn')}
             </button>
           </form>
 
           <p className="text-center text-sm text-gray-500 mt-6">
-            Don't have an account?{' '}
+            {t('login_no_account')}{' '}
             <Link to="/register" className="text-indigo-600 font-medium hover:underline">
-              Create one
+              {t('login_register')}
             </Link>
           </p>
         </div>

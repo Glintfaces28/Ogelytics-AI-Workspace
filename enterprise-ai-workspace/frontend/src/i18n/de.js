@@ -1,0 +1,142 @@
+const de = {
+  // Nav
+  nav_dashboard: 'Dashboard',
+  nav_documents: 'Dokumente',
+  nav_chat: 'KI-Chat',
+  nav_teams: 'Teams',
+  nav_analytics: 'Analysen',
+  nav_billing: 'Abrechnung',
+  nav_admin: 'Admin',
+  nav_signout: 'Abmelden',
+
+  // Dashboard
+  dash_welcome: 'Willkommen zurück',
+  dash_subtitle: 'Hier ist, was in Ihrem Arbeitsbereich passiert.',
+  dash_stat_docs: 'Dokumente gesamt',
+  dash_stat_members: 'Teammitglieder',
+  dash_stat_teams: 'Teams',
+  dash_stat_storage: 'Speicher genutzt',
+  dash_recent: (n) => `📁 ${n} Dokument${n !== 1 ? 'e' : ''} in den letzten 7 Tagen hochgeladen`,
+  dash_quick: 'Schnellaktionen',
+  dash_upload_title: 'Dokument hochladen',
+  dash_upload_sub: 'PDFs in Ihren Arbeitsbereich laden',
+  dash_ask_title: 'KI fragen',
+  dash_ask_sub: 'Mit Ihren Dokumenten chatten',
+  dash_teams_title: 'Teams verwalten',
+  dash_teams_sub: 'Ihren Arbeitsbereich organisieren',
+
+  // Documents
+  doc_title: 'Dokumente',
+  doc_subtitle: 'Dokumente hochladen, verwalten und teilen.',
+  doc_drop: 'Datei hier ablegen oder klicken zum Durchsuchen',
+  doc_types: 'PDF, DOCX, TXT und mehr',
+  doc_uploading: 'Wird hochgeladen…',
+  doc_no_docs: 'Noch keine Dokumente',
+  doc_no_docs_sub: 'Laden Sie Ihre erste Datei oben hoch.',
+  doc_error_load: 'Dokumente konnten nicht geladen werden.',
+  doc_error_upload: 'Upload fehlgeschlagen.',
+  doc_error_delete: 'Dokument konnte nicht gelöscht werden.',
+  doc_shared_title: 'Mit mir geteilt',
+  doc_shared_by: 'Geteilt von',
+  doc_delete_confirm: (name) => `„${name}" löschen?`,
+
+  // Share modal
+  share_title: 'Dokument teilen',
+  share_placeholder: 'E-Mail der Kollegin / des Kollegen eingeben',
+  share_btn: 'Teilen',
+  share_with: 'Geteilt mit',
+  share_none: 'Noch mit niemandem geteilt.',
+  share_error: 'Dokument konnte nicht geteilt werden.',
+
+  // AI Chat
+  chat_title: 'KI-Chat',
+  chat_subtitle: 'Stellen Sie Fragen zu Ihren Dokumenten',
+  chat_new: 'Neuer Chat',
+  chat_history: 'Chatverlauf',
+  chat_placeholder: 'Frage zu Ihren Dokumenten stellen…',
+  chat_send: 'Senden',
+  chat_no_history: 'Noch kein Verlauf',
+  chat_select_doc: 'Dokument auswählen',
+  chat_no_docs: 'Zuerst ein Dokument hochladen',
+  chat_thinking: 'Denkt nach…',
+  chat_export: 'Exportieren',
+  chat_copy: 'Kopieren',
+  chat_greeting: 'Hallo! Wählen Sie ein Dokument und stellen Sie mir eine Frage.',
+
+  // Teams
+  teams_title: 'Teams',
+  teams_subtitle: 'Mit Ihren Kollegen zusammenarbeiten',
+  teams_create: 'Team erstellen',
+  teams_no_teams: 'Noch keine Teams',
+  teams_no_teams_sub: 'Erstellen Sie Ihr erstes Team oben.',
+  teams_members: 'Mitglieder',
+  teams_add_member: 'Mitglied hinzufügen',
+  teams_remove: 'Entfernen',
+  teams_delete: 'Team löschen',
+  teams_name_placeholder: 'Teamname',
+
+  // Analytics
+  analytics_title: 'Analysen',
+  analytics_subtitle: 'Nutzungsübersicht für Ihren Arbeitsbereich',
+  analytics_uploads: 'Uploads (7 Tage)',
+  analytics_queries: 'KI-Anfragen',
+  analytics_users: 'Aktive Nutzer',
+  analytics_storage: 'Speicher',
+
+  // Billing
+  billing_title: 'Abrechnung',
+  billing_subtitle: 'Abonnement verwalten',
+  billing_current: 'Aktueller Plan',
+  billing_free: 'Kostenlos',
+  billing_pro: 'Pro',
+  billing_upgrade: 'Auf Pro upgraden',
+  billing_manage: 'Abonnement verwalten',
+  billing_loading: 'Abrechnungsinfo wird geladen…',
+
+  // Login / Register
+  login_title: 'Willkommen zurück',
+  login_subtitle: 'Melden Sie sich bei Ihrem Konto an',
+  login_email: 'E-Mail-Adresse',
+  login_password: 'Passwort',
+  login_btn: 'Anmelden',
+  login_forgot: 'Passwort vergessen?',
+  login_no_account: 'Noch kein Konto?',
+  login_register: 'Registrieren',
+  login_google: 'Mit Google fortfahren',
+  login_error: 'Ungültige E-Mail oder Passwort.',
+
+  register_title: 'Konto erstellen',
+  register_subtitle: 'Starten Sie Ihren KI-Arbeitsbereich heute',
+  register_username: 'Benutzername',
+  register_email: 'E-Mail-Adresse',
+  register_password: 'Passwort',
+  register_btn: 'Konto erstellen',
+  register_have_account: 'Haben Sie bereits ein Konto?',
+  register_login: 'Anmelden',
+  register_google: 'Mit Google fortfahren',
+
+  // Forgot / Reset password
+  forgot_title: 'Passwort vergessen',
+  forgot_subtitle: 'Wir senden Ihnen einen Reset-Link',
+  forgot_email: 'E-Mail-Adresse',
+  forgot_btn: 'Reset-Link senden',
+  forgot_back: 'Zurück zur Anmeldung',
+  forgot_sent: 'Prüfen Sie Ihre E-Mail für den Reset-Link.',
+
+  reset_title: 'Passwort zurücksetzen',
+  reset_new: 'Neues Passwort',
+  reset_btn: 'Passwort aktualisieren',
+  reset_success: 'Passwort aktualisiert. Sie können sich jetzt anmelden.',
+
+  // General
+  loading: 'Wird geladen…',
+  save: 'Speichern',
+  cancel: 'Abbrechen',
+  delete: 'Löschen',
+  edit: 'Bearbeiten',
+  close: 'Schließen',
+  error_generic: 'Etwas ist schiefgelaufen.',
+  language: 'Sprache',
+};
+
+export default de;

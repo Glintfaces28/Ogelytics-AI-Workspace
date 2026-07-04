@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FileText, Users, BarChart3, HardDrive, Upload, MessageSquare } from 'lucide-react';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
 function StatCard({ icon: Icon, label, value, color }) {
   return (
@@ -27,6 +28,7 @@ function formatBytes(bytes) {
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,9 +43,9 @@ export default function Dashboard() {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">
-          Welcome back, {user?.username} 👋
+          {t('dash_welcome')}, {user?.username} 👋
         </h1>
-        <p className="text-gray-500 mt-1">Here's what's happening in your workspace.</p>
+        <p className="text-gray-500 mt-1">{t('dash_subtitle')}</p>
       </div>
 
       {loading ? (
@@ -54,20 +56,20 @@ export default function Dashboard() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <StatCard icon={FileText} label="Total Documents" value={summary?.total_documents} color="bg-indigo-500" />
-          <StatCard icon={Users} label="Team Members" value={summary?.total_users} color="bg-emerald-500" />
-          <StatCard icon={BarChart3} label="Teams" value={summary?.total_teams} color="bg-amber-500" />
-          <StatCard icon={HardDrive} label="Storage Used" value={formatBytes(summary?.total_storage_bytes)} color="bg-rose-500" />
+          <StatCard icon={FileText} label={t('dash_stat_docs')} value={summary?.total_documents} color="bg-indigo-500" />
+          <StatCard icon={Users} label={t('dash_stat_members')} value={summary?.total_users} color="bg-emerald-500" />
+          <StatCard icon={BarChart3} label={t('dash_stat_teams')} value={summary?.total_teams} color="bg-amber-500" />
+          <StatCard icon={HardDrive} label={t('dash_stat_storage')} value={formatBytes(summary?.total_storage_bytes)} color="bg-rose-500" />
         </div>
       )}
 
       <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-5 mb-6">
         <p className="text-indigo-700 text-sm font-medium">
-          📁 {summary?.recent_uploads_7_days ?? 0} document{summary?.recent_uploads_7_days !== 1 ? 's' : ''} uploaded in the last 7 days
+          {t('dash_recent', summary?.recent_uploads_7_days ?? 0)}
         </p>
       </div>
 
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick actions</h2>
+      <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('dash_quick')}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Link
           to="/documents"
@@ -75,8 +77,8 @@ export default function Dashboard() {
         >
           <Upload size={20} className="text-indigo-500 group-hover:text-indigo-600" />
           <div>
-            <p className="font-medium text-gray-900 text-sm">Upload Document</p>
-            <p className="text-gray-500 text-xs mt-0.5">Add PDFs to your workspace</p>
+            <p className="font-medium text-gray-900 text-sm">{t('dash_upload_title')}</p>
+            <p className="text-gray-500 text-xs mt-0.5">{t('dash_upload_sub')}</p>
           </div>
         </Link>
         <Link
@@ -85,8 +87,8 @@ export default function Dashboard() {
         >
           <MessageSquare size={20} className="text-indigo-500 group-hover:text-indigo-600" />
           <div>
-            <p className="font-medium text-gray-900 text-sm">Ask AI</p>
-            <p className="text-gray-500 text-xs mt-0.5">Chat with your documents</p>
+            <p className="font-medium text-gray-900 text-sm">{t('dash_ask_title')}</p>
+            <p className="text-gray-500 text-xs mt-0.5">{t('dash_ask_sub')}</p>
           </div>
         </Link>
         <Link
@@ -95,8 +97,8 @@ export default function Dashboard() {
         >
           <Users size={20} className="text-indigo-500 group-hover:text-indigo-600" />
           <div>
-            <p className="font-medium text-gray-900 text-sm">Manage Teams</p>
-            <p className="text-gray-500 text-xs mt-0.5">Organise your workspace</p>
+            <p className="font-medium text-gray-900 text-sm">{t('dash_teams_title')}</p>
+            <p className="text-gray-500 text-xs mt-0.5">{t('dash_teams_sub')}</p>
           </div>
         </Link>
       </div>

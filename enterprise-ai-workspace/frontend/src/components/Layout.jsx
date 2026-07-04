@@ -5,19 +5,49 @@ import {
   BarChart3, LogOut, Brain, Menu, X, ShieldCheck, CreditCard,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/documents', label: 'Documents', icon: FileText },
-  { to: '/chat', label: 'AI Chat', icon: MessageSquare },
-  { to: '/teams', label: 'Teams', icon: Users },
-  { to: '/analytics', label: 'Analytics', icon: BarChart3 },
-  { to: '/billing', label: 'Billing', icon: CreditCard },
-];
+function LanguageToggle() {
+  const { lang, switchLang } = useLanguage();
+  return (
+    <div className="flex items-center gap-1 bg-slate-800 rounded-lg p-1 mb-3">
+      <button
+        onClick={() => switchLang('en')}
+        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+          lang === 'en'
+            ? 'bg-indigo-600 text-white'
+            : 'text-slate-400 hover:text-white'
+        }`}
+      >
+        <span className="text-sm">🇬🇧</span> EN
+      </button>
+      <button
+        onClick={() => switchLang('de')}
+        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-semibold transition-colors ${
+          lang === 'de'
+            ? 'bg-indigo-600 text-white'
+            : 'text-slate-400 hover:text-white'
+        }`}
+      >
+        <span className="text-sm">🇩🇪</span> DE
+      </button>
+    </div>
+  );
+}
 
 function SidebarNav({ onClose }) {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
+
+  const navItems = [
+    { to: '/dashboard', label: t('nav_dashboard'), icon: LayoutDashboard },
+    { to: '/documents', label: t('nav_documents'), icon: FileText },
+    { to: '/chat', label: t('nav_chat'), icon: MessageSquare },
+    { to: '/teams', label: t('nav_teams'), icon: Users },
+    { to: '/analytics', label: t('nav_analytics'), icon: BarChart3 },
+    { to: '/billing', label: t('nav_billing'), icon: CreditCard },
+  ];
 
   function handleLogout() {
     logout();
@@ -70,12 +100,15 @@ function SidebarNav({ onClose }) {
             }
           >
             <ShieldCheck size={17} />
-            Admin
+            {t('nav_admin')}
           </NavLink>
         )}
       </nav>
 
       <div className="p-4 border-t border-slate-700">
+        {/* Language toggle */}
+        <LanguageToggle />
+
         <div className="flex items-center gap-3 mb-3 px-1">
           <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-bold shrink-0">
             {user?.username?.[0]?.toUpperCase() || 'U'}
@@ -90,7 +123,7 @@ function SidebarNav({ onClose }) {
           className="flex items-center gap-2 w-full px-3 py-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg text-sm transition-colors"
         >
           <LogOut size={16} />
-          Sign out
+          {t('nav_signout')}
         </button>
       </div>
     </div>
@@ -110,7 +143,7 @@ export default function Layout() {
         />
       )}
 
-      {/* Sidebar — hidden on mobile unless open */}
+      {/* Sidebar */}
       <aside
         className={`
           fixed md:relative inset-y-0 left-0 z-30 w-64 bg-slate-900

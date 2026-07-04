@@ -1,0 +1,142 @@
+const en = {
+  // Nav
+  nav_dashboard: 'Dashboard',
+  nav_documents: 'Documents',
+  nav_chat: 'AI Chat',
+  nav_teams: 'Teams',
+  nav_analytics: 'Analytics',
+  nav_billing: 'Billing',
+  nav_admin: 'Admin',
+  nav_signout: 'Sign out',
+
+  // Dashboard
+  dash_welcome: 'Welcome back',
+  dash_subtitle: "Here's what's happening in your workspace.",
+  dash_stat_docs: 'Total Documents',
+  dash_stat_members: 'Team Members',
+  dash_stat_teams: 'Teams',
+  dash_stat_storage: 'Storage Used',
+  dash_recent: (n) => `📁 ${n} document${n !== 1 ? 's' : ''} uploaded in the last 7 days`,
+  dash_quick: 'Quick actions',
+  dash_upload_title: 'Upload Document',
+  dash_upload_sub: 'Add PDFs to your workspace',
+  dash_ask_title: 'Ask AI',
+  dash_ask_sub: 'Chat with your documents',
+  dash_teams_title: 'Manage Teams',
+  dash_teams_sub: 'Organise your workspace',
+
+  // Documents
+  doc_title: 'Documents',
+  doc_subtitle: 'Upload, manage, and share your workspace documents.',
+  doc_drop: 'Drop a file here or click to browse',
+  doc_types: 'PDF, DOCX, TXT and more',
+  doc_uploading: 'Uploading…',
+  doc_no_docs: 'No documents yet',
+  doc_no_docs_sub: 'Upload your first file above.',
+  doc_error_load: 'Could not load documents.',
+  doc_error_upload: 'Upload failed.',
+  doc_error_delete: 'Could not delete document.',
+  doc_shared_title: 'Shared with me',
+  doc_shared_by: 'Shared by',
+  doc_delete_confirm: (name) => `Delete "${name}"?`,
+
+  // Share modal
+  share_title: 'Share Document',
+  share_placeholder: "Enter colleague's email",
+  share_btn: 'Share',
+  share_with: 'Shared with',
+  share_none: 'Not shared with anyone yet.',
+  share_error: 'Could not share document.',
+
+  // AI Chat
+  chat_title: 'AI Chat',
+  chat_subtitle: 'Ask questions about your documents',
+  chat_new: 'New chat',
+  chat_history: 'Chat history',
+  chat_placeholder: 'Ask a question about your documents…',
+  chat_send: 'Send',
+  chat_no_history: 'No history yet',
+  chat_select_doc: 'Select a document',
+  chat_no_docs: 'Upload a document first',
+  chat_thinking: 'Thinking…',
+  chat_export: 'Export',
+  chat_copy: 'Copy',
+  chat_greeting: 'Hello! Select a document and ask me anything.',
+
+  // Teams
+  teams_title: 'Teams',
+  teams_subtitle: 'Collaborate with your colleagues',
+  teams_create: 'Create Team',
+  teams_no_teams: 'No teams yet',
+  teams_no_teams_sub: 'Create your first team above.',
+  teams_members: 'Members',
+  teams_add_member: 'Add member',
+  teams_remove: 'Remove',
+  teams_delete: 'Delete team',
+  teams_name_placeholder: 'Team name',
+
+  // Analytics
+  analytics_title: 'Analytics',
+  analytics_subtitle: 'Usage overview for your workspace',
+  analytics_uploads: 'Uploads (7 days)',
+  analytics_queries: 'AI Queries',
+  analytics_users: 'Active Users',
+  analytics_storage: 'Storage',
+
+  // Billing
+  billing_title: 'Billing',
+  billing_subtitle: 'Manage your subscription',
+  billing_current: 'Current Plan',
+  billing_free: 'Free',
+  billing_pro: 'Pro',
+  billing_upgrade: 'Upgrade to Pro',
+  billing_manage: 'Manage Subscription',
+  billing_loading: 'Loading billing info…',
+
+  // Login / Register
+  login_title: 'Welcome back',
+  login_subtitle: 'Sign in to your account',
+  login_email: 'Email address',
+  login_password: 'Password',
+  login_btn: 'Sign in',
+  login_forgot: 'Forgot password?',
+  login_no_account: "Don't have an account?",
+  login_register: 'Register',
+  login_google: 'Continue with Google',
+  login_error: 'Invalid email or password.',
+
+  register_title: 'Create account',
+  register_subtitle: 'Start your AI workspace today',
+  register_username: 'Username',
+  register_email: 'Email address',
+  register_password: 'Password',
+  register_btn: 'Create account',
+  register_have_account: 'Already have an account?',
+  register_login: 'Sign in',
+  register_google: 'Continue with Google',
+
+  // Forgot / Reset password
+  forgot_title: 'Forgot password',
+  forgot_subtitle: "We'll send you a reset link",
+  forgot_email: 'Email address',
+  forgot_btn: 'Send reset link',
+  forgot_back: 'Back to login',
+  forgot_sent: 'Check your email for the reset link.',
+
+  reset_title: 'Reset password',
+  reset_new: 'New password',
+  reset_btn: 'Update password',
+  reset_success: 'Password updated. You can now sign in.',
+
+  // General
+  loading: 'Loading…',
+  save: 'Save',
+  cancel: 'Cancel',
+  delete: 'Delete',
+  edit: 'Edit',
+  close: 'Close',
+  error_generic: 'Something went wrong.',
+  language: 'Language',
+};
+
+export default en;
