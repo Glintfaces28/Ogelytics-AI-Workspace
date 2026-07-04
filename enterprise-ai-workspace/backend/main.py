@@ -39,7 +39,7 @@ if frontend_url:
 app.add_middleware(
     CORSMiddleware,
     allow_origins=allowed_origins,
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1):\d+|https://.*\.onrender\.com",
+    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1):\d+|https://.*\.onrender\.com|https://(www\.)?ogelytics\.com",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -60,10 +60,10 @@ app.include_router(auth_router)
 app.include_router(admin_router)
 app.include_router(billing_router)
 app.include_router(oauth_router)
+app.include_router(sharing_router)
 app.include_router(documents_router)
 app.include_router(ai_router)
 app.include_router(chat_history_router)
-app.include_router(sharing_router)
 app.include_router(teams_router)
 app.include_router(reports_router)
 app.include_router(analytics_router)
