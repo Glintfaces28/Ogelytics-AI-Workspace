@@ -1,8 +1,10 @@
 import { Link } from 'react-router-dom';
 import { Brain, FileText, MessageSquare, Users, Shield, Zap, CheckCircle, ArrowRight, Upload, Search, Sparkles } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 // ── Navbar ─────────────────────────────────────────────────────────────────────
 function Navbar() {
+  const { lang, switchLang, t } = useLanguage();
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -11,17 +13,36 @@ function Navbar() {
           <span className="text-white font-bold text-lg tracking-tight">Ogelytics AI</span>
         </div>
         <div className="flex items-center gap-3">
+          {/* Language toggle */}
+          <div className="flex items-center gap-0.5 bg-slate-800 rounded-lg p-1">
+            <button
+              onClick={() => switchLang('en')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                lang === 'en' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              🇬🇧 EN
+            </button>
+            <button
+              onClick={() => switchLang('de')}
+              className={`flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors ${
+                lang === 'de' ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              🇩🇪 DE
+            </button>
+          </div>
           <Link
             to="/login"
             className="text-slate-300 hover:text-white text-sm font-medium transition-colors px-4 py-2"
           >
-            Sign in
+            {t('landing_nav_signin')}
           </Link>
           <Link
             to="/register"
             className="bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
           >
-            Get started free
+            {t('landing_nav_started')}
           </Link>
         </div>
       </div>
@@ -31,6 +52,7 @@ function Navbar() {
 
 // ── Hero ───────────────────────────────────────────────────────────────────────
 function Hero() {
+  const { t } = useLanguage();
   return (
     <section className="relative pt-32 pb-24 px-6 overflow-hidden">
       {/* Background glow */}
@@ -41,19 +63,18 @@ function Hero() {
       <div className="relative max-w-4xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-semibold px-4 py-2 rounded-full mb-6">
           <Sparkles size={12} />
-          AI-Powered Document Intelligence
+          {t('landing_badge')}
         </div>
 
         <h1 className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-6">
-          Ask questions about<br />
+          {t('landing_hero_h1a')}<br />
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-violet-400">
-            your documents
+            {t('landing_hero_h1b')}
           </span>
         </h1>
 
         <p className="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
-          Upload your PDFs and files. Get instant AI answers grounded in your actual content —
-          not generic responses. Built for teams that need accurate, document-backed insights.
+          {t('landing_hero_sub')}
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -61,17 +82,17 @@ function Hero() {
             to="/register"
             className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-7 py-3.5 rounded-xl transition-colors text-base"
           >
-            Start for free <ArrowRight size={18} />
+            {t('landing_cta_start')} <ArrowRight size={18} />
           </Link>
           <Link
             to="/login"
             className="flex items-center gap-2 text-slate-300 hover:text-white border border-slate-700 hover:border-slate-500 font-medium px-7 py-3.5 rounded-xl transition-colors text-base"
           >
-            Sign in to your workspace
+            {t('landing_cta_signin')}
           </Link>
         </div>
 
-        <p className="text-slate-500 text-sm mt-5">Free forever · No credit card required</p>
+        <p className="text-slate-500 text-sm mt-5">{t('landing_free')}</p>
       </div>
 
       {/* App preview mockup */}
@@ -135,30 +156,19 @@ function Hero() {
 
 // ── How it works ───────────────────────────────────────────────────────────────
 function HowItWorks() {
+  const { t } = useLanguage();
   const steps = [
-    {
-      icon: Upload,
-      title: 'Upload your documents',
-      desc: 'Drag and drop PDFs, reports, contracts, or any document. We extract and index the content instantly.',
-    },
-    {
-      icon: Search,
-      title: 'Ask in plain English',
-      desc: 'Type your question naturally. Our AI searches your documents for relevant passages.',
-    },
-    {
-      icon: Sparkles,
-      title: 'Get accurate answers',
-      desc: 'Receive answers grounded only in your documents — with no hallucinations or made-up information.',
-    },
+    { icon: Upload, title: t('landing_step1_title'), desc: t('landing_step1_sub') },
+    { icon: Search, title: t('landing_step2_title'), desc: t('landing_step2_sub') },
+    { icon: Sparkles, title: t('landing_step3_title'), desc: t('landing_step3_sub') },
   ];
 
   return (
     <section className="py-24 px-6 border-t border-slate-800">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">How it works</h2>
-          <p className="text-slate-400 text-lg">From upload to insight in seconds.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('landing_how_title')}</h2>
+          <p className="text-slate-400 text-lg">{t('landing_features_sub')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {steps.map(({ icon: Icon, title, desc }, i) => (
@@ -184,6 +194,7 @@ function HowItWorks() {
 
 // ── Features ───────────────────────────────────────────────────────────────────
 function Features() {
+  const { t } = useLanguage();
   const features = [
     { icon: Brain, title: 'AI that reads your docs', desc: 'GPT-powered answers based exclusively on your uploaded documents. No generic responses.' },
     { icon: MessageSquare, title: 'Persistent chat history', desc: 'Every conversation is saved. Come back to any session and continue where you left off.' },
@@ -197,8 +208,8 @@ function Features() {
     <section className="py-24 px-6 border-t border-slate-800">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Everything your team needs</h2>
-          <p className="text-slate-400 text-lg">Built for real enterprise workflows, not demos.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('landing_features_title')}</h2>
+          <p className="text-slate-400 text-lg">{t('landing_features_sub')}</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map(({ icon: Icon, title, desc }) => (
