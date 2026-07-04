@@ -10,9 +10,12 @@ import {
   Users,
 } from 'lucide-react';
 import api from '../api/client';
+import { useLanguage } from '../context/LanguageContext';
 
 function RoleBadge({ role }) {
+  const { t } = useLanguage();
   const owner = role === 'owner';
+  const label = role === 'owner' ? t('teams_role_owner') : role === 'admin' ? t('teams_role_admin') : t('teams_role_member');
   return (
     <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${
       owner
@@ -20,12 +23,13 @@ function RoleBadge({ role }) {
         : 'border-slate-200 bg-slate-50 text-slate-600'
     }`}>
       {owner ? <Crown size={12} /> : <Shield size={12} />}
-      {role}
+      {label}
     </span>
   );
 }
 
 export default function Teams() {
+  const { t } = useLanguage();
   const [teams, setTeams] = useState([]);
   const [selectedTeam, setSelectedTeam] = useState(null);
   const [loadingTeams, setLoadingTeams] = useState(true);
@@ -82,7 +86,6 @@ export default function Teams() {
   async function createTeam(e) {
     e.preventDefault();
     if (!newName.trim()) return;
-
     setCreating(true);
     setError('');
     try {
@@ -103,7 +106,6 @@ export default function Teams() {
 
   async function deleteTeam(team) {
     if (!confirm(`Delete team "${team.name}"? This cannot be undone.`)) return;
-
     setError('');
     try {
       await api.delete(`/api/teams/${team.id}`);
@@ -122,7 +124,6 @@ export default function Teams() {
   async function addMember(e) {
     e.preventDefault();
     if (!memberEmail.trim() || !selectedTeam) return;
-
     setAddingMember(true);
     setError('');
     try {
@@ -149,7 +150,6 @@ export default function Teams() {
 
   async function removeMember(member) {
     if (!selectedTeam || !confirm(`Remove ${member.email} from "${selectedTeam.name}"?`)) return;
-
     setError('');
     try {
       await api.delete(`/api/teams/${selectedTeam.id}/members/${member.user_id}`);
@@ -163,15 +163,15 @@ export default function Teams() {
     <div className="p-6 max-w-6xl mx-auto">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Teams</h1>
-          <p className="text-gray-500 mt-1">Manage workspace groups and member access.</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('teams_title')}</h1>
+          <p className="text-gray-500 mt-1">{t('teams_subtitle')}</p>
         </div>
         <button
-          onClick={() => setShowCreate((value) => !value)}
+          onClick={() => setShowCreate((v) => !v)}
           className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors"
         >
           <Plus size={16} />
-          New team
+          {t('teams_new')}
         </button>
       </div>
 
@@ -185,7 +185,7 @@ export default function Teams() {
         <form onSubmit={createTeam} className="bg-white border border-indigo-200 rounded-lg p-5 mb-6">
           <div className="grid gap-3 md:grid-cols-[1fr_1.5fr_auto] md:items-end">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Team name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('teams_name_label')}</label>
               <input
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
@@ -194,7 +194,7 @@ export default function Teams() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{t('teams_desc_label')}</label>
               <input
                 value={newDesc}
                 onChange={(e) => setNewDesc(e.target.value)}
@@ -207,7 +207,7 @@ export default function Teams() {
               className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-60"
             >
               {creating && <Loader2 size={15} className="animate-spin" />}
-              Create
+              {t('teams_create_btn')}
             </button>
           </div>
         </form>
@@ -216,15 +216,15 @@ export default function Teams() {
       <div className="grid gap-5 lg:grid-cols-[360px_1fr]">
         <section className="bg-white border border-gray-200 rounded-lg overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="font-semibold text-gray-900">My teams</h2>
+            <h2 className="font-semibold text-gray-900">{t('teams_my_teams')}</h2>
             {loadingTeams && <Loader2 size={16} className="text-gray-400 animate-spin" />}
           </div>
 
           {teams.length === 0 && !loadingTeams ? (
             <div className="text-center py-12 text-gray-400">
               <Users size={36} className="mx-auto mb-3 opacity-40" />
-              <p className="font-medium">No teams yet</p>
-              <p className="text-sm">Create a team to get started.</p>
+              <p className="font-medium">{t('teams_no_teams')}</p>
+              <p className="text-sm">{t('teams_no_teams_sub')}</p>
             </div>
           ) : (
             <div className="divide-y divide-gray-100">
@@ -246,7 +246,7 @@ export default function Teams() {
                     {team.is_owner && <Crown size={16} className="text-amber-500 shrink-0" />}
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
-                    {team.member_count} {team.member_count === 1 ? 'member' : 'members'}
+                    {t('teams_member_count', team.member_count)}
                   </p>
                 </button>
               ))}
@@ -259,7 +259,7 @@ export default function Teams() {
             <div className="h-full min-h-[420px] flex items-center justify-center text-center text-gray-400">
               <div>
                 <Users size={40} className="mx-auto mb-3 opacity-40" />
-                <p className="font-medium">Select a team</p>
+                <p className="font-medium">{t('teams_select')}</p>
               </div>
             </div>
           ) : (
@@ -280,7 +280,7 @@ export default function Teams() {
                     className="inline-flex items-center gap-2 text-red-600 hover:bg-red-50 border border-red-200 px-3 py-2 rounded-lg text-sm font-medium"
                   >
                     <Trash2 size={15} />
-                    Delete
+                    {t('teams_delete_btn')}
                   </button>
                 )}
               </div>
@@ -289,7 +289,7 @@ export default function Teams() {
                 {(selectedTeam.is_owner || selectedTeam.my_role === 'admin') && (
                   <form onSubmit={addMember} className="grid gap-3 md:grid-cols-[1fr_150px_auto] md:items-end mb-6">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Member email</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('teams_member_email')}</label>
                       <input
                         type="email"
                         value={memberEmail}
@@ -299,14 +299,14 @@ export default function Teams() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">{t('teams_role_label')}</label>
                       <select
                         value={memberRole}
                         onChange={(e) => setMemberRole(e.target.value)}
                         className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       >
-                        <option value="member">Member</option>
-                        <option value="admin">Admin</option>
+                        <option value="member">{t('teams_role_member')}</option>
+                        <option value="admin">{t('teams_role_admin')}</option>
                       </select>
                     </div>
                     <button
@@ -315,14 +315,14 @@ export default function Teams() {
                       className="inline-flex items-center justify-center gap-2 bg-indigo-600 text-white px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-indigo-700 disabled:opacity-60"
                     >
                       {addingMember ? <Loader2 size={15} className="animate-spin" /> : <UserPlus size={15} />}
-                      Add
+                      {t('teams_add_btn')}
                     </button>
                   </form>
                 )}
 
                 <div className="border border-gray-200 rounded-lg overflow-hidden">
                   <div className="px-4 py-3 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900">Members</h3>
+                    <h3 className="font-semibold text-gray-900">{t('teams_members')}</h3>
                     {loadingDetails && <Loader2 size={16} className="text-gray-400 animate-spin" />}
                   </div>
                   <div className="divide-y divide-gray-100">
@@ -338,7 +338,7 @@ export default function Teams() {
                             <button
                               onClick={() => removeMember(member)}
                               className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                              title="Remove member"
+                              title={t('teams_remove_title')}
                             >
                               <UserMinus size={16} />
                             </button>
