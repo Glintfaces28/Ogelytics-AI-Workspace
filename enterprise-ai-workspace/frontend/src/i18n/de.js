@@ -151,6 +151,37 @@ const de = {
   landing_pricing_sub: 'Kostenlos starten. Upgraden, wenn Ihr Team bereit ist.',
   landing_footer: '© 2026 Ogelytics AI. Für moderne Teams entwickelt.',
 
+  // Feature cards
+  feat1_title: 'KI, die Ihre Dokumente liest',
+  feat1_desc: 'GPT-gestützte Antworten ausschließlich auf Basis Ihrer hochgeladenen Dokumente. Keine generischen Antworten.',
+  feat2_title: 'Persistenter Chatverlauf',
+  feat2_desc: 'Jedes Gespräch wird gespeichert. Kehren Sie jederzeit zurück und machen Sie dort weiter, wo Sie aufgehört haben.',
+  feat3_title: 'Antworten exportieren',
+  feat3_desc: 'KI-Antworten als PDF oder Word-Dokument herunterladen — zum Teilen und Archivieren.',
+  feat4_title: 'Teamzusammenarbeit',
+  feat4_desc: 'Teams erstellen, Mitglieder einladen und Dokumente in Ihrer Organisation teilen.',
+  feat5_title: 'Enterprise-Sicherheit',
+  feat5_desc: 'JWT-Authentifizierung, bcrypt-Passwörter und verschlüsselter Speicher. Ihre Daten bleiben Ihre Daten.',
+  feat6_title: 'Sofort einsatzbereit',
+  feat6_desc: 'Registrieren und erstes Dokument in unter 2 Minuten hochladen. Keine Konfiguration nötig.',
+
+  // Pricing
+  price_free_desc: 'Perfekt für den Einstieg.',
+  price_pro_desc: 'Für wachsende Teams.',
+  price_ent_desc: 'Für große Organisationen.',
+  price_badge: 'Beliebteste Wahl',
+  price_forever: 'für immer',
+  price_month: 'pro Monat',
+  price_cta_free: 'Kostenlos starten',
+  price_cta_pro: 'Pro starten',
+  price_cta_ent: 'Enterprise starten',
+
+  // CTA banner
+  cta_title: 'Bereit, Ihre Dokumente zu erschließen?',
+  cta_sub: 'Schließen Sie sich Teams an, die Ogelytics bereits nutzen, um sofortige Antworten aus ihren Dokumenten zu erhalten.',
+  cta_btn: 'Kostenloses Konto erstellen',
+  cta_note: 'Keine Kreditkarte erforderlich · Jederzeit kündbar',
+
   // General
   loading: 'Wird geladen…',
   save: 'Speichern',

@@ -196,12 +196,12 @@ function HowItWorks() {
 function Features() {
   const { t } = useLanguage();
   const features = [
-    { icon: Brain, title: 'AI that reads your docs', desc: 'GPT-powered answers based exclusively on your uploaded documents. No generic responses.' },
-    { icon: MessageSquare, title: 'Persistent chat history', desc: 'Every conversation is saved. Come back to any session and continue where you left off.' },
-    { icon: FileText, title: 'Export answers', desc: 'Download AI responses as PDF or Word documents for sharing and record-keeping.' },
-    { icon: Users, title: 'Team collaboration', desc: 'Create teams, invite members, and share documents across your organisation.' },
-    { icon: Shield, title: 'Enterprise security', desc: 'JWT authentication, bcrypt passwords, and encrypted storage. Your data stays yours.' },
-    { icon: Zap, title: 'Instant setup', desc: 'Sign up and upload your first document in under 2 minutes. No configuration needed.' },
+    { icon: Brain, title: t('feat1_title'), desc: t('feat1_desc') },
+    { icon: MessageSquare, title: t('feat2_title'), desc: t('feat2_desc') },
+    { icon: FileText, title: t('feat3_title'), desc: t('feat3_desc') },
+    { icon: Users, title: t('feat4_title'), desc: t('feat4_desc') },
+    { icon: Shield, title: t('feat5_title'), desc: t('feat5_desc') },
+    { icon: Zap, title: t('feat6_title'), desc: t('feat6_desc') },
   ];
 
   return (
@@ -229,35 +229,36 @@ function Features() {
 
 // ── Pricing ────────────────────────────────────────────────────────────────────
 function Pricing() {
+  const { t } = useLanguage();
   const plans = [
     {
       name: 'Free',
       price: '$0',
-      period: 'forever',
-      desc: 'Perfect for getting started.',
+      period: t('price_forever'),
+      desc: t('price_free_desc'),
       features: ['Up to 10 documents', 'AI chat (limited)', '1 team', 'Community support'],
-      cta: 'Get started',
+      cta: t('price_cta_free'),
       href: '/register',
       highlight: false,
     },
     {
       name: 'Pro',
       price: '$19',
-      period: 'per month',
-      desc: 'For growing teams.',
-      badge: 'Most popular',
+      period: t('price_month'),
+      desc: t('price_pro_desc'),
+      badge: t('price_badge'),
       features: ['Unlimited documents', 'Full AI chat & history', 'Up to 10 teams', 'Document sharing', 'Export to PDF / Word', 'Priority email support'],
-      cta: 'Start Pro',
+      cta: t('price_cta_pro'),
       href: '/register',
       highlight: true,
     },
     {
       name: 'Enterprise',
       price: '$49',
-      period: 'per month',
-      desc: 'For large organisations.',
+      period: t('price_month'),
+      desc: t('price_ent_desc'),
       features: ['Everything in Pro', 'Unlimited teams & members', 'Admin panel', 'Custom domain', 'Dedicated support', 'SLA guarantee'],
-      cta: 'Start Enterprise',
+      cta: t('price_cta_ent'),
       href: '/register',
       highlight: false,
     },
@@ -267,8 +268,8 @@ function Pricing() {
     <section className="py-24 px-6 border-t border-slate-800">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Simple, transparent pricing</h2>
-          <p className="text-slate-400 text-lg">Start free. Upgrade when you're ready.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">{t('landing_pricing_title')}</h2>
+          <p className="text-slate-400 text-lg">{t('landing_pricing_sub')}</p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map(plan => (
@@ -321,22 +322,23 @@ function Pricing() {
 
 // ── CTA Banner ─────────────────────────────────────────────────────────────────
 function CTABanner() {
+  const { t } = useLanguage();
   return (
     <section className="py-24 px-6 border-t border-slate-800">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          Ready to unlock your documents?
+          {t('cta_title')}
         </h2>
         <p className="text-slate-400 text-lg mb-8">
-          Join teams already using Ogelytics to get instant answers from their documents.
+          {t('cta_sub')}
         </p>
         <Link
           to="/register"
           className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-8 py-4 rounded-xl transition-colors text-base"
         >
-          Create your free account <ArrowRight size={18} />
+          {t('cta_btn')} <ArrowRight size={18} />
         </Link>
-        <p className="text-slate-500 text-sm mt-4">No credit card required · Cancel anytime</p>
+        <p className="text-slate-500 text-sm mt-4">{t('cta_note')}</p>
       </div>
     </section>
   );
@@ -344,6 +346,7 @@ function CTABanner() {
 
 // ── Footer ─────────────────────────────────────────────────────────────────────
 function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="border-t border-slate-800 py-10 px-6">
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -352,11 +355,11 @@ function Footer() {
           <span className="text-white font-bold">Ogelytics AI</span>
         </div>
         <div className="flex items-center gap-6 text-slate-400 text-sm">
-          <Link to="/login" className="hover:text-white transition-colors">Sign in</Link>
-          <Link to="/register" className="hover:text-white transition-colors">Sign up</Link>
+          <Link to="/login" className="hover:text-white transition-colors">{t('landing_nav_signin')}</Link>
+          <Link to="/register" className="hover:text-white transition-colors">{t('landing_nav_started')}</Link>
           <a href="mailto:support@ogelytics.com" className="hover:text-white transition-colors">Contact</a>
         </div>
-        <p className="text-slate-500 text-sm">© {new Date().getFullYear()} Ogelytics AI. All rights reserved.</p>
+        <p className="text-slate-500 text-sm">{t('landing_footer')}</p>
       </div>
     </footer>
   );

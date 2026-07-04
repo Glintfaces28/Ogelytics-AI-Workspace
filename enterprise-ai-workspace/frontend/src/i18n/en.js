@@ -151,6 +151,37 @@ const en = {
   landing_pricing_sub: 'Start free. Upgrade when your team is ready.',
   landing_footer: '© 2026 Ogelytics AI. Built for modern teams.',
 
+  // Feature cards
+  feat1_title: 'AI that reads your docs',
+  feat1_desc: 'GPT-powered answers based exclusively on your uploaded documents. No generic responses.',
+  feat2_title: 'Persistent chat history',
+  feat2_desc: 'Every conversation is saved. Come back to any session and continue where you left off.',
+  feat3_title: 'Export answers',
+  feat3_desc: 'Download AI responses as PDF or Word documents for sharing and record-keeping.',
+  feat4_title: 'Team collaboration',
+  feat4_desc: 'Create teams, invite members, and share documents across your organisation.',
+  feat5_title: 'Enterprise security',
+  feat5_desc: 'JWT authentication, bcrypt passwords, and encrypted storage. Your data stays yours.',
+  feat6_title: 'Instant setup',
+  feat6_desc: 'Sign up and upload your first document in under 2 minutes. No configuration needed.',
+
+  // Pricing
+  price_free_desc: 'Perfect for getting started.',
+  price_pro_desc: 'For growing teams.',
+  price_ent_desc: 'For large organisations.',
+  price_badge: 'Most popular',
+  price_forever: 'forever',
+  price_month: 'per month',
+  price_cta_free: 'Get started',
+  price_cta_pro: 'Start Pro',
+  price_cta_ent: 'Start Enterprise',
+
+  // CTA banner
+  cta_title: 'Ready to unlock your documents?',
+  cta_sub: 'Join teams already using Ogelytics to get instant answers from their documents.',
+  cta_btn: 'Create your free account',
+  cta_note: 'No credit card required · Cancel anytime',
+
   // General
   loading: 'Loading…',
   save: 'Save',
