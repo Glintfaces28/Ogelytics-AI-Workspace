@@ -62,6 +62,16 @@ const de = {
   chat_export: 'Exportieren',
   chat_copy: 'Kopieren',
   chat_greeting: 'Hallo! Wählen Sie ein Dokument und stellen Sie mir eine Frage.',
+  chat_download_answer: 'Antwort herunterladen',
+  chat_history_empty: 'Ihr Chatverlauf erscheint hier nach Ihrem ersten Gespräch.',
+  chat_search_all: 'Alle durchsuchen',
+  chat_error_retry: 'Entschuldigung, etwas ist schiefgelaufen. Bitte erneut versuchen.',
+  chat_export_chat: 'Chat exportieren',
+  chat_docs_label: 'Dokumente',
+  chat_loading_docs: 'Dokumente werden geladen…',
+  chat_today: 'Heute',
+  chat_yesterday: 'Gestern',
+  chat_days_ago: (n) => `Vor ${n} Tagen`,
 
   // Teams
   teams_title: 'Teams',

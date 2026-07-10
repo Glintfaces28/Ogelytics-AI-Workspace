@@ -5,6 +5,7 @@ import {
   Download,
 } from 'lucide-react';
 import api from '../api/client';
+import { useLanguage } from '../context/LanguageContext';
 
 // ── Export helpers ────────────────────────────────────────────────────────────
 
@@ -22,7 +23,7 @@ function formatConversation(messages) {
   const date = new Date().toLocaleString();
   let out = `OGELYTICS AI WORKSPACE — CHAT EXPORT\nGenerated: ${date}\n${'='.repeat(50)}\n\n`;
   for (const msg of messages) {
-    if (msg.role === 'assistant' && msg.content.startsWith('Hello!')) continue;
+    if (msg.isGreeting) continue;
     if (msg.role === 'user') {
       out += `Q: ${msg.content}\n\n`;
     } else {
@@ -39,33 +40,30 @@ function formatConversation(messages) {
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
-function timeLabel(dateStr) {
+function timeLabel(dateStr, t) {
   const d = new Date(dateStr);
   const now = new Date();
   const diffMs = now - d;
   const diffDays = Math.floor(diffMs / 86400000);
-  if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
+  if (diffDays === 0) return t('chat_today');
+  if (diffDays === 1) return t('chat_yesterday');
+  if (diffDays < 7) return t('chat_days_ago', diffDays);
   return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-// Group sessions by relative date label
-function groupSessions(sessions) {
+function groupSessions(sessions, t) {
   const groups = {};
   for (const s of sessions) {
-    const label = timeLabel(s.updated_at);
+    const label = timeLabel(s.updated_at, t);
     if (!groups[label]) groups[label] = [];
     groups[label].push(s);
   }
   return groups;
 }
 
-const WELCOME = { role: 'assistant', content: 'Hello! Ask me anything about your uploaded documents.' };
-
 // ── Message bubble ────────────────────────────────────────────────────────────
 
-function Message({ msg, index }) {
+function Message({ msg, index, t }) {
   const isUser = msg.role === 'user';
 
   function downloadAnswer() {
@@ -97,10 +95,10 @@ function Message({ msg, index }) {
         {!isUser && (
           <button
             onClick={downloadAnswer}
-            title="Download this answer"
+            title={t('chat_download_answer')}
             className="flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-600 transition-colors px-1"
           >
-            <Download size={12} /> Download answer
+            <Download size={12} /> {t('chat_download_answer')}
           </button>
         )}
         {msg.sources && msg.sources.length > 0 && (
@@ -213,9 +211,15 @@ function SessionItem({ session, isActive, onSelect, onDelete, onRename }) {
 // ── Main component ────────────────────────────────────────────────────────────
 
 export default function AiChat() {
+  const { t } = useLanguage();
+
+  function makeWelcome() {
+    return { role: 'assistant', content: t('chat_greeting'), isGreeting: true };
+  }
+
   const [sessions, setSessions] = useState([]);
   const [currentSessionId, setCurrentSessionId] = useState(null);
-  const [messages, setMessages] = useState([WELCOME]);
+  const [messages, setMessages] = useState(() => [makeWelcome()]);
   const [documents, setDocuments] = useState([]);
   const [selectedDocumentIds, setSelectedDocumentIds] = useState([]);
   const [loadingDocuments, setLoadingDocuments] = useState(true);
@@ -259,7 +263,7 @@ export default function AiChat() {
         content: m.content,
         sources: m.sources || undefined,
       }));
-      setMessages(msgs.length ? msgs : [WELCOME]);
+      setMessages(msgs.length ? msgs : [makeWelcome()]);
     } catch {
       // ignore
     } finally {
@@ -269,7 +273,7 @@ export default function AiChat() {
 
   function newChat() {
     setCurrentSessionId(null);
-    setMessages([WELCOME]);
+    setMessages([makeWelcome()]);
     setSelectedDocumentIds([]);
     setInput('');
   }
@@ -336,14 +340,14 @@ export default function AiChat() {
     } catch {
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: 'Sorry, something went wrong. Please try again.' },
+        { role: 'assistant', content: t('chat_error_retry') },
       ]);
     } finally {
       setSending(false);
     }
   }
 
-  const sessionGroups = groupSessions(sessions);
+  const sessionGroups = groupSessions(sessions, t);
 
   return (
     <div className="flex h-full overflow-hidden">
@@ -358,7 +362,7 @@ export default function AiChat() {
             className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors"
           >
             <Plus size={15} />
-            New Chat
+            {t('chat_new')}
           </button>
         </div>
 
@@ -366,7 +370,7 @@ export default function AiChat() {
         <div className="flex-1 overflow-y-auto p-2 space-y-4">
           {sessions.length === 0 ? (
             <p className="text-xs text-gray-400 text-center pt-6 px-4">
-              Your chat history will appear here after your first conversation.
+              {t('chat_history_empty')}
             </p>
           ) : (
             Object.entries(sessionGroups).map(([label, group]) => (
@@ -404,15 +408,15 @@ export default function AiChat() {
             {sidebarOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
           </button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold text-gray-900">AI Chat</h1>
-            <p className="text-gray-500 text-sm">Ask questions about your uploaded documents.</p>
+            <h1 className="text-xl font-bold text-gray-900">{t('chat_title')}</h1>
+            <p className="text-gray-500 text-sm">{t('chat_subtitle')}</p>
           </div>
           {messages.length > 1 && (
             <button
               onClick={() => downloadText(formatConversation(messages), `ogelytics-chat-${Date.now()}.txt`)}
               className="flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 border border-gray-200 hover:border-indigo-300 rounded-lg px-3 py-1.5 transition-colors"
             >
-              <Download size={14} /> Export chat
+              <Download size={14} /> {t('chat_export_chat')}
             </button>
           )}
         </div>
@@ -425,7 +429,7 @@ export default function AiChat() {
             </div>
           ) : (
             <>
-              {messages.map((msg, i) => <Message key={i} msg={msg} index={i} />)}
+              {messages.map((msg, i) => <Message key={i} msg={msg} index={i} t={t} />)}
               {sending && (
                 <div className="flex gap-3">
                   <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
@@ -451,7 +455,7 @@ export default function AiChat() {
             <div>
               <div className="flex items-center justify-between gap-3 mb-2">
                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Documents
+                  {t('chat_docs_label')}
                 </p>
                 {selectedDocumentIds.length > 0 && (
                   <button
@@ -459,16 +463,16 @@ export default function AiChat() {
                     onClick={() => setSelectedDocumentIds([])}
                     className="text-xs font-medium text-indigo-600 hover:text-indigo-800"
                   >
-                    Search all
+                    {t('chat_search_all')}
                   </button>
                 )}
               </div>
               {loadingDocuments ? (
                 <div className="flex items-center gap-2 text-sm text-gray-400">
-                  <Loader2 size={14} className="animate-spin" /> Loading documents...
+                  <Loader2 size={14} className="animate-spin" /> {t('chat_loading_docs')}
                 </div>
               ) : documents.length === 0 ? (
-                <p className="text-sm text-gray-400">No documents uploaded yet.</p>
+                <p className="text-sm text-gray-400">{t('chat_no_docs')}</p>
               ) : (
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {documents.map(doc => {
@@ -503,7 +507,7 @@ export default function AiChat() {
               <input
                 value={input}
                 onChange={e => setInput(e.target.value)}
-                placeholder="Ask a question about your documents…"
+                placeholder={t('chat_placeholder')}
                 disabled={sending}
                 className="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent disabled:bg-gray-50"
               />
@@ -513,7 +517,7 @@ export default function AiChat() {
                 className="bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 disabled:opacity-50 transition-colors flex items-center gap-2"
               >
                 <Send size={16} />
-                <span className="hidden sm:inline text-sm font-medium">Send</span>
+                <span className="hidden sm:inline text-sm font-medium">{t('chat_send')}</span>
               </button>
             </div>
           </div>
