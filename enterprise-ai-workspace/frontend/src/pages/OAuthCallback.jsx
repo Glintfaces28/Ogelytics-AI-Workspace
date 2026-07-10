@@ -23,7 +23,7 @@ export default function OAuthCallback() {
     if (token) {
       try {
         login(token);
-        navigate('/', { replace: true });
+        navigate('/dashboard', { replace: true });
       } catch (e) {
         setStatus('Login error: ' + e.message);
         setTimeout(() => navigate('/login'), 2000);
