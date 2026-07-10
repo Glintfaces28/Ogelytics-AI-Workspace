@@ -162,6 +162,7 @@ const de = {
   login_forgot: 'Passwort vergessen?',
   login_no_account: 'Noch kein Konto?',
   login_register: 'Registrieren',
+  login_or: 'oder',
   login_google: 'Mit Google fortfahren',
   login_error: 'Ungültige E-Mail oder Passwort.',
 

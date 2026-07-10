@@ -162,6 +162,7 @@ const en = {
   login_forgot: 'Forgot password?',
   login_no_account: "Don't have an account?",
   login_register: 'Register',
+  login_or: 'or',
   login_google: 'Continue with Google',
   login_error: 'Invalid email or password.',
 
