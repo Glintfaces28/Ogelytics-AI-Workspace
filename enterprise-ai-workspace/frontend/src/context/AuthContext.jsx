@@ -7,6 +7,8 @@ function userFromToken(accessToken) {
 
   try {
     const payload = JSON.parse(atob(accessToken.split('.')[1]));
+    // Check if token is expired
+    if (payload.exp && payload.exp * 1000 < Date.now()) return null;
     return {
       id: payload.user_id,
       email: payload.sub,
@@ -20,8 +22,11 @@ function userFromToken(accessToken) {
 
 export function AuthProvider({ children }) {
   const storedToken = localStorage.getItem('token');
-  const [token, setToken] = useState(storedToken);
-  const [user, setUser] = useState(userFromToken(storedToken));
+  // Clear expired token from storage immediately
+  const validUser = userFromToken(storedToken);
+  if (storedToken && !validUser) localStorage.removeItem('token');
+  const [token, setToken] = useState(validUser ? storedToken : null);
+  const [user, setUser] = useState(validUser);
 
   function login(accessToken, username) {
     const userData = userFromToken(accessToken);

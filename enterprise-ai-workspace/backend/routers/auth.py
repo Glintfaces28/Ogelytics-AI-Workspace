@@ -161,6 +161,7 @@ async def google_callback(code: str = None, error: str = None, db: Session = Dep
 
     # Find or create user
     user = db.query(models.User).filter(models.User.email == email).first()
+    is_new_user = False
     if not user:
         user = models.User(
             username=name,
@@ -170,6 +171,10 @@ async def google_callback(code: str = None, error: str = None, db: Session = Dep
         db.add(user)
         db.commit()
         db.refresh(user)
+        is_new_user = True
+
+    if is_new_user:
+        send_welcome_email(user.email, user.username)
 
     # Issue JWT and redirect to frontend
     jwt = create_access_token({"sub": user.email, "user_id": user.id, "is_admin": user.is_admin})

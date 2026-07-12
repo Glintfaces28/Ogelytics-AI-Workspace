@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /documents
+Disallow: /ai-chat
+Disallow: /teams
+Disallow: /analytics
+Disallow: /billing
+Disallow: /admin
+
+Sitemap: https://ogelytics.com/sitemap.xml
