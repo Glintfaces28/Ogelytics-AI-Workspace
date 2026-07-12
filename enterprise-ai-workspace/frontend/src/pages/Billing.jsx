@@ -71,7 +71,7 @@ export default function Billing() {
     {
       id: 'free',
       name: 'Free',
-      price: '$0',
+      price: '€0',
       period: t('price_forever'),
       desc: t('price_free_desc'),
       color: 'gray',
@@ -80,7 +80,7 @@ export default function Billing() {
     {
       id: 'pro',
       name: 'Pro',
-      price: '$19',
+      price: '€19',
       period: t('price_month'),
       desc: t('price_pro_desc'),
       color: 'indigo',
@@ -93,7 +93,7 @@ export default function Billing() {
     {
       id: 'enterprise',
       name: 'Enterprise',
-      price: '$49',
+      price: '€49',
       period: t('price_month'),
       desc: t('price_ent_desc'),
       color: 'amber',

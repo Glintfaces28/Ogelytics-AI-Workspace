@@ -233,7 +233,7 @@ function Pricing() {
   const plans = [
     {
       name: 'Free',
-      price: '$0',
+      price: '€0',
       period: t('price_forever'),
       desc: t('price_free_desc'),
       features: [t('price_free_f1'), t('price_free_f2'), t('price_free_f3'), t('price_free_f4')],
@@ -243,7 +243,7 @@ function Pricing() {
     },
     {
       name: 'Pro',
-      price: '$19',
+      price: '€19',
       period: t('price_month'),
       desc: t('price_pro_desc'),
       badge: t('price_badge'),
@@ -254,7 +254,7 @@ function Pricing() {
     },
     {
       name: 'Enterprise',
-      price: '$49',
+      price: '€49',
       period: t('price_month'),
       desc: t('price_ent_desc'),
       features: [t('price_ent_f1'), t('price_ent_f2'), t('price_ent_f3'), t('price_ent_f4'), t('price_ent_f5'), t('price_ent_f6')],
