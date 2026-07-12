@@ -35,17 +35,45 @@ def get_analytics(
     days = last_seven_days()
     start = datetime.combine(days[0], datetime.min.time())
 
-    total_documents = db.query(func.count(models.Document.id)).scalar() or 0
-    total_ai_queries = db.query(func.count(models.AIQuery.id)).scalar() or 0
-    total_storage_bytes = db.query(func.sum(models.Document.file_size)).scalar() or 0
-    total_team_members = db.query(func.count(models.TeamMember.id)).scalar() or 0
+    uid = current_user.id
+
+    total_documents = (
+        db.query(func.count(models.Document.id))
+        .filter(models.Document.uploaded_by == uid)
+        .scalar() or 0
+    )
+    total_ai_queries = (
+        db.query(func.count(models.AIQuery.id))
+        .filter(models.AIQuery.user_id == uid)
+        .scalar() or 0
+    )
+    total_storage_bytes = (
+        db.query(func.sum(models.Document.file_size))
+        .filter(models.Document.uploaded_by == uid)
+        .scalar() or 0
+    )
+
+    # Members in teams this user belongs to
+    user_team_ids = (
+        db.query(models.TeamMember.team_id)
+        .filter(models.TeamMember.user_id == uid)
+        .subquery()
+    )
+    total_team_members = (
+        db.query(func.count(func.distinct(models.TeamMember.user_id)))
+        .filter(models.TeamMember.team_id.in_(user_team_ids))
+        .scalar() or 0
+    )
 
     document_rows = (
         db.query(
             func.date(models.Document.uploaded_at).label("day"),
             func.count(models.Document.id).label("count"),
         )
-        .filter(models.Document.uploaded_at >= start)
+        .filter(
+            models.Document.uploaded_by == uid,
+            models.Document.uploaded_at >= start,
+        )
         .group_by(func.date(models.Document.uploaded_at))
         .all()
     )
@@ -55,7 +83,10 @@ def get_analytics(
             func.date(models.AIQuery.created_at).label("day"),
             func.count(models.AIQuery.id).label("count"),
         )
-        .filter(models.AIQuery.created_at >= start)
+        .filter(
+            models.AIQuery.user_id == uid,
+            models.AIQuery.created_at >= start,
+        )
         .group_by(func.date(models.AIQuery.created_at))
         .all()
     )

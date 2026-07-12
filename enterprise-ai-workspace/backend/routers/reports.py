@@ -17,15 +17,48 @@ def get_summary(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    total_documents = db.query(func.count(Document.id)).scalar() or 0
-    total_users = db.query(func.count(User.id)).scalar() or 0
-    total_teams = db.query(func.count(Team.id)).scalar() or 0
-    total_storage_bytes = db.query(func.sum(Document.file_size)).scalar() or 0
+    from models import TeamMember
+
+    # Only this user's documents
+    total_documents = (
+        db.query(func.count(Document.id))
+        .filter(Document.uploaded_by == current_user.id)
+        .scalar() or 0
+    )
+
+    # Teams this user belongs to
+    total_teams = (
+        db.query(func.count(TeamMember.id))
+        .filter(TeamMember.user_id == current_user.id)
+        .scalar() or 0
+    )
+
+    # Members in those same teams (including the user themselves)
+    user_team_ids = (
+        db.query(TeamMember.team_id)
+        .filter(TeamMember.user_id == current_user.id)
+        .subquery()
+    )
+    total_users = (
+        db.query(func.count(func.distinct(TeamMember.user_id)))
+        .filter(TeamMember.team_id.in_(user_team_ids))
+        .scalar() or 0
+    )
+
+    # Only this user's storage
+    total_storage_bytes = (
+        db.query(func.sum(Document.file_size))
+        .filter(Document.uploaded_by == current_user.id)
+        .scalar() or 0
+    )
 
     week_ago = datetime.utcnow() - timedelta(days=7)
     recent_uploads_7_days = (
         db.query(func.count(Document.id))
-        .filter(Document.uploaded_at >= week_ago)
+        .filter(
+            Document.uploaded_by == current_user.id,
+            Document.uploaded_at >= week_ago,
+        )
         .scalar() or 0
     )
 
