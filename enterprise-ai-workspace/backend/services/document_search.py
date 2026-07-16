@@ -119,7 +119,12 @@ def _metadata_passage(document: models.Document, passages: list[str]) -> str:
 
 
 def _overview_results(documents: list[models.Document], limit: int) -> list[dict]:
-    """Return passages spread across the document so overview questions get representative context."""
+    """Return passages for overview questions.
+
+    Strategy: take the first 8 passages (covers preface, TOC, chapter intros)
+    plus 7 passages spread across the rest of the document — 15 total per document.
+    This ensures the table of contents and chapter descriptions are always included.
+    """
     results = []
 
     for document in documents:
@@ -132,15 +137,19 @@ def _overview_results(documents: list[models.Document], limit: int) -> list[dict
         if not useful:
             continue
 
-        # Sample up to 10 passages spread evenly across the whole document
-        # so we get context from beginning, middle AND end — not just the preface
         n = len(useful)
-        sample_count = min(10, n)
-        if n <= sample_count:
-            sampled = useful
+        # First 8 passages — TOC and chapter descriptions live here
+        early = useful[:8]
+        # Spread 7 more across the remainder
+        remaining = useful[8:]
+        spread_count = 7
+        if len(remaining) >= spread_count:
+            step = len(remaining) / spread_count
+            spread = [remaining[int(i * step)] for i in range(spread_count)]
         else:
-            step = n / sample_count
-            sampled = [useful[int(i * step)] for i in range(sample_count)]
+            spread = remaining
+
+        sampled = early + spread  # up to 15 passages
 
         for passage in sampled:
             results.append({

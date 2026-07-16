@@ -45,7 +45,7 @@ class ChatRequest(BaseModel):
     question: str = Field(..., min_length=1)
     document_id: int | None = None
     document_ids: list[int] | None = None
-    max_results: int = Field(default=5, ge=1, le=20)
+    max_results: int = Field(default=15, ge=1, le=20)
     session_id: int | None = None
 
 

@@ -61,6 +61,9 @@ def generate_answer(question: str, results: list[dict]) -> str:
             {
                 "role": "user",
                 "content": (
+                    f"IMPORTANT: My question below is written in a specific language. "
+                    f"You MUST reply in that same language — even if the document context is in a different language. "
+                    f"Do NOT respond in German unless my question is in German.\n\n"
                     f"Question:\n{question}\n\n"
                     f"Document context:\n{build_context(results)}"
                 ),
