@@ -57,8 +57,27 @@ def build_context(results: list[dict]) -> str:
     return "\n\n".join(context_blocks)
 
 
+def _detect_language(text: str) -> str:
+    """Simple heuristic: detect whether the question is German, French, or English."""
+    german_chars = set("äöüÄÖÜß")
+    german_words = {"ich", "sie", "der", "die", "das", "und", "ist", "war", "wie",
+                    "bitte", "können", "haben", "nicht", "auch", "eine", "einem"}
+    french_words = {"je", "tu", "nous", "vous", "est", "sont", "avec", "pour",
+                    "que", "une", "les", "des", "mon", "ton"}
+
+    if any(c in german_chars for c in text):
+        return "German"
+    words = set(text.lower().split())
+    if len(words & german_words) >= 2:
+        return "German"
+    if len(words & french_words) >= 2:
+        return "French"
+    return "English"
+
+
 def generate_answer(question: str, results: list[dict]) -> str:
     client = _get_client()
+    lang = _detect_language(question)
     response = client.chat.completions.create(
         model=OPENAI_MODEL,
         messages=[
@@ -66,9 +85,10 @@ def generate_answer(question: str, results: list[dict]) -> str:
             {
                 "role": "user",
                 "content": (
-                    f"IMPORTANT: My question below is written in a specific language. "
-                    f"You MUST reply in that same language — even if the document context is in a different language. "
-                    f"Do NOT respond in German unless my question is in German.\n\n"
+                    f"##MANDATORY INSTRUCTION: YOU MUST REPLY IN {lang.upper()} ONLY.##\n"
+                    f"The question below is in {lang}. "
+                    f"Your entire response must be in {lang}. "
+                    f"The documents may be in a different language — ignore that and reply in {lang}.\n\n"
                     f"Question:\n{question}\n\n"
                     f"Document context:\n{build_context(results)}"
                 ),
