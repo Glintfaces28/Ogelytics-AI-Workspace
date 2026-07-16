@@ -11,6 +11,11 @@ The document content may be in a different language — that does not matter.
 Example: if the user asks in English, your entire reply must be in English, even if all documents are in German.
 Never switch to the document's language. Always mirror the user's question language.
 
+CRITICAL RULE — DOCUMENT STRUCTURE:
+If the document context contains a table of contents, chapter headings, section titles, or topic lists
+(even in German or another language), translate and use them to answer the user's question.
+A table of contents IS specific information about what the document covers — do not say the context lacks detail if you can see headings or chapter names.
+
 If the context does not contain enough information to answer fully, say so clearly in the user's language.
 """
 

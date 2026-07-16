@@ -315,7 +315,7 @@ export default function AiChat() {
     try {
       const payload = {
         question,
-        max_results: 3,
+        max_results: 15,
         document_ids: selectedDocumentIds.length ? selectedDocumentIds : null,
         session_id: currentSessionId,
       };
