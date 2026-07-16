@@ -18,9 +18,11 @@ STOPWORDS = {
 # Broad/overview queries — treat as summarise-all
 OVERVIEW_PHRASES = {
     "topics", "topic", "summary", "summarize", "summarise", "overview",
-    "covered", "about", "contain", "contents", "cover", "describe",
-    "themen", "inhalt", "zusammenfassung", "überblick",          # German
-    "sujets", "résumé", "contenu", "aperçu",                     # French
+    "covered", "about", "contain", "contents", "content", "cover", "describe",
+    "learn", "learning", "expect", "achieve", "study", "chapters", "chapter",
+    "teaches", "teach", "cover", "structured", "curriculum",
+    "themen", "inhalt", "zusammenfassung", "überblick", "lernen", "lerne",  # German
+    "sujets", "résumé", "contenu", "aperçu",                                 # French
 }
 
 
@@ -117,7 +119,7 @@ def _metadata_passage(document: models.Document, passages: list[str]) -> str:
 
 
 def _overview_results(documents: list[models.Document], limit: int) -> list[dict]:
-    """Return multiple rich passages per document so overview questions get enough context."""
+    """Return passages spread across the document so overview questions get representative context."""
     results = []
 
     for document in documents:
@@ -127,8 +129,20 @@ def _overview_results(documents: list[models.Document], limit: int) -> list[dict
         passages = _document_passages(document)
         useful = [p for p in passages if _is_useful_overview_passage(p)]
 
-        # Take up to 3 passages per document for rich context
-        for passage in useful[:3]:
+        if not useful:
+            continue
+
+        # Sample up to 10 passages spread evenly across the whole document
+        # so we get context from beginning, middle AND end — not just the preface
+        n = len(useful)
+        sample_count = min(10, n)
+        if n <= sample_count:
+            sampled = useful
+        else:
+            step = n / sample_count
+            sampled = [useful[int(i * step)] for i in range(sample_count)]
+
+        for passage in sampled:
             results.append({
                 "document_id": document.id,
                 "filename": document.filename,
